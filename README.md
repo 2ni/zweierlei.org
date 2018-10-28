@@ -2,7 +2,7 @@
 - https://github.com/KoRiGaN/Vue2Leaflet
 - https://vuematerial.io
 - https://www.w3schools.com/html/html5_semantic_elements.asp
-- http://jsfiddle.net/5V288/1025/
+- http://jsfiddle.net/a3nvjqvg/
 
 ## Project setup
 ```
