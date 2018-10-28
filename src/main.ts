@@ -16,6 +16,15 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+import VueMaterial from 'vue-material';
+import 'vue-material/dist/vue-material.min.css';
+import 'vue-material/dist/theme/default.css';
+Vue.use(VueMaterial);
+import { MdButton, MdContent, MdTabs, MdLayout } from 'vue-material/dist/components';
+import 'vue-material/dist/vue-material.min.css';
+Vue.use(MdLayout);
+Vue.use(MdButton);
+
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
   locale: 'en',
@@ -29,6 +38,14 @@ export const i18n = new VueI18n({
     },
   },
 });
+
+import Default from './layouts/Default.vue';
+import Empty from './layouts/Empty.vue';
+import Full from './layouts/Full.vue';
+
+Vue.component('default-layout', Default);
+Vue.component('empty-layout', Empty);
+Vue.component('full-layout', Full);
 
 Vue.config.productionTip = false;
 

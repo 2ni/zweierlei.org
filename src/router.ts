@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Map from './views/Map.vue';
+import Test from './views/Test.vue';
 
 Vue.use(Router);
 
@@ -26,6 +27,13 @@ export default new Router({
       path: '/map',
       name: 'map',
       component: Map,
+      meta: { layout: 'full' },
+    },
+    {
+      path: '/test',
+      name: 'test',
+      component: Test,
+      meta: { layout: 'empty' },
     },
   ],
 });
