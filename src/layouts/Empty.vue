@@ -1,11 +1,11 @@
 <template>
-  <main id="layout-empty">
+  <section>
     <slot />
-  </main>
+  </section>
 </template>
 
 <style>
-#layout-empty {
+section {
   height: 100%;
 }
 </style>

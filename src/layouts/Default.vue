@@ -11,15 +11,9 @@ export default {
 </script>
 
 <template>
-  <section>
+  <section class="layout-base layout-default">
     <header-bar />
     <slot />
     <footer-bar />
   </section>
 </template>
-
-<style>
-  section {
-    height: 100%;
-  }
-</style>

@@ -11,7 +11,7 @@ export default {
 </script>
 
 <template>
-  <section>
+  <section class="layout-base layout-full">
     <header-bar />
     <slot />
     <footer-bar />
@@ -19,19 +19,8 @@ export default {
 </template>
 
 <style>
-  html, body {
+  section.layout-full {
     height: 100%;
-  }
-
-  section {
-    font-family: 'Avenir', Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
     border: 3px solid red;
-    height: 100%;
-    display: table;
-    width: 100%;
   }
 </style>
