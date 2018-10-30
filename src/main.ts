@@ -20,10 +20,15 @@ import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
 Vue.use(VueMaterial);
-import { MdButton, MdContent, MdTabs, MdLayout } from 'vue-material/dist/components';
+// import VueMaterial from 'vue-material';
+// Vue.use(VueMaterial);
+
 import 'vue-material/dist/vue-material.min.css';
+import { MdButton, MdLayout, MdCard, MdTable } from 'vue-material/dist/components';
 Vue.use(MdLayout);
 Vue.use(MdButton);
+Vue.use(MdCard);
+Vue.use(MdTable);
 
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
