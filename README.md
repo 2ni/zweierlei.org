@@ -3,6 +3,9 @@
 - https://vuematerial.io
 - https://www.w3schools.com/html/html5_semantic_elements.asp
 - http://jsfiddle.net/a3nvjqvg/
+- Drag & Drop
+  - https://github.com/chybie/file-upload-vue/blob/master/src/App.vue
+  - https://vue-file-upload-1126b.firebaseapp.com/?_sm_au_=iVVtq6QkDF5Fffjs
 
 ## Project installation
 ```
