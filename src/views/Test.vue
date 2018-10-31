@@ -6,9 +6,10 @@
       </div>
     </header>
     <div>
-      <div class="content">
+      <div class="content" @dragenter="emphasizeDropBox" @mouseout="deemphasizeDropBox">
         <p>I take up the remaining height</p>
         <div class="md-layout md-gutter">
+          <!-- table example -->
           <div class="md-layout-item md-small-size-100">
             <md-card>
               <md-card-header>
@@ -36,6 +37,7 @@
             </md-card>
           </div>
 
+          <!-- drag & drop file upload -->
           <div class="md-layout-item">
             <md-card>
               <md-card-header>
@@ -43,7 +45,7 @@
               </md-card-header>
               <md-card-content>
                 <form enctype='multipart/form-data' novalidate v-if='isInitial || isUploading'>
-                  <div class='dropBox'>
+                  <div class='dropBox' v-bind:class="{ dropBoxHighlight: isDragging }">
                     <input type="file" multiple name="files" :disabled="isUploading" @change="processFile($event)" accept="image/*">
                     <!--
                     <md-field>
@@ -57,7 +59,7 @@
                 </form>
               </md-card-content>
             </md-card>
-            <md-card v-for='item in files'>
+            <md-card v-for='item in files' :key="item.url">
               <md-card-media md-ratio='16:9'>
                 <img src='item.url' alt='item.originalName'>
               </md-card-media>
@@ -82,6 +84,8 @@ export default {
       files: null,
       fileCount: null,
       currentStatus: STATUS_INITIAL,
+      isDragging: null,
+      showDropBox: true,
     };
   },
   methods: {
@@ -101,6 +105,12 @@ export default {
     },
     uploading(data) {
       this.currentStatus = STATUS_UPLOADING;
+    },
+    emphasizeDropBox() {
+      this.isDragging = true;
+    },
+    deemphasizeDropBox(event) {
+      this.isDragging = false;
     },
     processFile(event) {
       this.fileCount = event.target.files.length;
@@ -191,7 +201,7 @@ export default {
 }
 */
 
-.dropBox:hover {
+.dropBoxHighlight {
   border: 2px dotted black;
 }
 
