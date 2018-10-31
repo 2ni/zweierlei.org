@@ -101,9 +101,6 @@ export default {
           && 'FormData' in window
           && 'FileReader' in window;
     },
-    uploading(data) {
-      this.currentStatus = STATUS_UPLOADING;
-    },
     emphasizeDropBox() {
       this.isDragging = true;
     },
@@ -129,6 +126,9 @@ export default {
       console.log(event.target.files.length);
 
       if (event) { return event.preventDefault(); }
+    },
+    uploading(data) {
+      this.currentStatus = STATUS_UPLOADING;
     },
   },
   computed: {
