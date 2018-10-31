@@ -45,17 +45,15 @@
               </md-card-header>
               <md-card-content>
                 <form enctype='multipart/form-data' novalidate v-if='isInitial || isUploading'>
-                  <div class='dropBox' v-bind:class="{ dropBoxHighlight: isDragging }">
-                    <input type="file" multiple name="files" :disabled="isUploading" @change="processFile($event)" accept="image/*">
-                    <!--
-                    <md-field>
-                      <label>Upload files</label>
-                      <md-file class="file-upload" @change='processFile($event)' name='files' accept='image/*' :disabled='isUploading' multiple />
-                    </md-field>
-                    -->
-                    <p v-if='isInitial'>Drop files here</p>
+                  <div class='dropField' v-show="isDragging">
+                    <p v-if='isInitial'>Drop Files anywhere</p>
                     <p v-if='isUploading'>Uploading {{ fileCount }} file(s)</p>
+                    <input type="file" multiple name="files" :disabled="isUploading" @change="processFile($event)" accept="image/*">
                   </div>
+                  <md-field>
+                    <label>Upload files</label>
+                    <md-file class="file-upload" @change='processFile($event)' name='files' accept='image/*' :disabled='isUploading' multiple />
+                  </md-field>
                 </form>
               </md-card-content>
             </md-card>
@@ -173,40 +171,35 @@ export default {
   padding: 10px;
 }
 
-.dropBox {
-  background: lightgrey;
-  border: 2px solid lightgrey;
-  position: relative;
-  cursor: pointer;
-  overflow: hidden;
-  padding: 0;
+.dropField {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  border: 5px dotted yellow;
+  align: center;
+  z-index: 2;
 }
 
-.dropBox input {
+.dropField p {
+  position: absolute;
+  left: 50%;
+  font-size: 50px;
+  color: yellow;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+.dropField input {
   width: 100%;
-  height: 200px;
+  height: 100%;
   position: absolute;
   cursor: pointer;
-  border: 1px solid black;
+  border: 10px solid black;
   opacity: 0;
 }
-
-/*
-.dropBox .file-upload .md-input {
-  width: 100%;
-  height: 200px;
-  position: absolute;
-  cursor: pointer;
-  border: 1px solid black;
-}
-*/
-
-.dropBoxHighlight {
-  border: 2px dotted black;
-}
-
-.dropBox p {
-  text-align: center;
-}
-
 </style>
