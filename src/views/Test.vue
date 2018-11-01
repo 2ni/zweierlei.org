@@ -62,9 +62,17 @@
             </md-card>
             <div class="photos">
               <md-card style="z-index: 0" v-for='item in photos' :key="item.url">
-                <md-card-media md-ratio='16:9'>
-                  <img :src='item.url' :alt='item.originalName'>
-                </md-card-media>
+                <md-card-media-cover md-test-scrim>
+                  <md-card-media md-ratio='16:9'>
+                    <img :src='item.url' :alt='item.originalName'>
+                  </md-card-media>
+                  <md-card-area>
+                    <md-card-header>
+                      <span class="md-title">{{ item.originalName }}</span>
+                      <span class="md-subhead">Some subhead</span>
+                    </md-card-header>
+                  </md-card-area>
+                </md-card-media-cover>
               </md-card>
             </div>
           </div>
