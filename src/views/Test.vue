@@ -44,24 +44,29 @@
                 <div class="md-title">File upload</div>
               </md-card-header>
               <md-card-content>
-                <form enctype='multipart/form-data' novalidate v-if='isInitial || isUploading'>
+                <md-toolbar class="md-dense" v-show="isError">
+                  <pre>Error! {{ this.error }}</pre>
+                </md-toolbar>
+                <form enctype='multipart/form-data' novalidate v-if='isInitial || isUploading || isSuccess'>
                   <div class='dropField' v-show="isDragging">
                     <p v-if='isInitial'>Drop Files anywhere</p>
-                    <p v-if='isUploading'>Uploading {{ fileCount }} file(s)</p>
-                    <input type="file" multiple name="files" :disabled="isUploading" @change="processFile($event)" accept="image/*">
+                    <p v-if='isUploading'>Uploading {{ photoCount }} file(s)</p>
+                    <input type="file" multiple name="photos" :disabled="isUploading" @change="processFile($event)" accept="image/*">
                   </div>
                   <md-field>
-                    <label>Upload files</label>
-                    <md-file class="file-upload" @change='processFile($event)' name='files' accept='image/*' :disabled='isUploading' multiple />
+                    <label>Upload photos</label>
+                    <md-file class="file-upload" @change='processFile($event)' name='photos' accept='image/*' :disabled='isUploading' multiple />
                   </md-field>
                 </form>
               </md-card-content>
             </md-card>
-            <md-card v-for='item in files' :key="item.url">
-              <md-card-media md-ratio='16:9'>
-                <img src='item.url' alt='item.originalName'>
-              </md-card-media>
-            </md-card>
+            <div class="photos">
+              <md-card style="z-index: 0" v-for='item in photos' :key="item.url">
+                <md-card-media md-ratio='16:9'>
+                  <img :src='item.url' :alt='item.originalName'>
+                </md-card-media>
+              </md-card>
+            </div>
           </div>
         </div>
       </div>
@@ -70,18 +75,23 @@
 </template>
 
 <script type="ts">
+// with thanks to https://github.com/chybie/file-upload-vue
+import { upload } from './file-upload.fake.service';
+import { wait } from './utils';
+
 const STATUS_INITIAL = 0;
 const STATUS_UPLOADING = 1;
 const STATUS_SUCCESS = 2;
-const STATUS_FAILED = 3;
+const STATUS_ERROR = 3;
 
 export default {
   data() {
     return {
       contacts: [{firstname: 'John', lastname: 'Doe', email: 'john.doe@gmail.com'}],
-      files: null,
-      fileCount: null,
+      photos: [],
+      photoCount: null,
       currentStatus: STATUS_INITIAL,
+      error: null,
       isDragging: null,
       showDropBox: true,
     };
@@ -108,27 +118,32 @@ export default {
       this.isDragging = false;
     },
     processFile(event) {
-      this.fileCount = event.target.files.length;
+      this.photoCount = event.target.files.length;
       const data = new FormData();
 
-      if (!this.fileCount) { return; }
+      if (!this.photoCount) { return; }
 
       Array
-          .from(Array(event.target.files.length).keys())
+          .from(Array(this.photoCount).keys())
           .map(x => {
             data.append(event.target.name, event.target.files[x], event.target.files[x].name);
           });
 
       this.uploading(data);
-
-      console.log(event.target.name);
-      console.log(event.target.files[0].name);
-      console.log(event.target.files.length);
-
       if (event) { return event.preventDefault(); }
     },
     uploading(data) {
       this.currentStatus = STATUS_UPLOADING;
+      this.isDragging = false;
+
+      upload(data).then(wait(1000)).then(x => {
+        this.photos = this.photos.concat(x);
+        this.currentStatus = STATUS_SUCCESS;
+      })
+      .catch(err => {
+        this.error = err. response;
+        this.currentStatus = STATUS_ERROR;
+      });
     },
   },
   computed: {
@@ -137,6 +152,12 @@ export default {
     },
     isUploading() {
       return this.currentStatus === STATUS_UPLOADING;
+    },
+    isError() {
+      return this.currentStatus === STATUS_ERROR;
+    },
+    isSuccess() {
+      return this.currentStatus === STATUS_SUCCESS;
     },
   },
 };
@@ -182,7 +203,7 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   border: 5px dotted yellow;
   align: center;
-  z-index: 2;
+  z-index: 1;
 }
 
 .dropField p {
@@ -201,5 +222,9 @@ export default {
   cursor: pointer;
   border: 10px solid black;
   opacity: 0;
+}
+
+.photos {
+  z-index: 0;
 }
 </style>

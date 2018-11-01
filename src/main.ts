@@ -24,13 +24,14 @@ Vue.use(VueMaterial);
 // Vue.use(VueMaterial);
 
 import 'vue-material/dist/vue-material.min.css';
-import { MdButton, MdLayout, MdCard, MdTable, MdField, MdDialog } from 'vue-material/dist/components';
+import { MdButton, MdLayout, MdCard, MdTable, MdField, MdDialog, MdToolbar } from 'vue-material/dist/components';
 Vue.use(MdLayout);
 Vue.use(MdButton);
 Vue.use(MdCard);
 Vue.use(MdTable);
 Vue.use(MdField);
 Vue.use(MdDialog);
+Vue.use(MdToolbar);
 
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
