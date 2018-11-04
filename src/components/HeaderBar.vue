@@ -1,18 +1,29 @@
 <template>
-  <nav>
-    <div>
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link> |
-      <router-link to="/map">Map</router-link> |
-      <router-link to="/test">Test</router-link>
-      <ul>
-        <li v-for="(v,lang) in this.$i18n.messages">
-          <a v-if="lang != currentLocale" :href="lang" v-on:click="changeLang(lang, $event)">{{lang}}</a>
-          <span v-if="lang == currentLocale">{{lang}}</span>
-        </li>
-      </ul>
+  <div class="container">
+    <div class="navbar-brand">
+      <a class="navbar-item">zweierlei.org</a>
+      <span class="navbar-burger burger" data-target="navbarMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </span>
     </div>
-  </nav>
+    <div id="navbarMenu" class="navbar-menu">
+      <div class="navbar-end">
+        <router-link class="navbar-item is-active" to="/">Home</router-link>
+        <router-link class="navbar-item" to="/about">About</router-link>
+        <router-link class="navbar-item" to="/map">Map</router-link>
+        <router-link class="navbar-item" to="/test">Test</router-link>
+        <router-link class="navbar-item" to="/bulma">Bulma</router-link>
+        <ul class="navbar-item">
+          <li v-for="(v,lang) in this.$i18n.messages">
+            <a v-if="lang != currentLocale" :href="lang" v-on:click="changeLang(lang, $event)">{{lang}}</a>
+            <span v-if="lang == currentLocale">{{lang}}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script type="ts">
@@ -34,41 +45,8 @@ export default {
 </script>
 
 <style>
-nav {
-  width: 100%;
-  background: lightgrey;
-  display: table-row;
-}
-nav > div {
-  border: 1px solid grey;
-  display: table-cell;
-}
-
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-
-nav ul {
-  list-style-type: none;
-  text-align: center;
-  padding: 0;
-  position: absolute;
-  top: 0;
-  right: 10px;
-  margin: 5px 0;
-}
-
-nav li {
-  display: inline;
-}
-
 nav li:after {
-  content: ' | ';
+  content: '|';
 }
 
 nav li:last-child:after {

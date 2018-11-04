@@ -1,79 +1,50 @@
 <template>
-  <main id="main-map">
-    <div>
-      <div class="container">
-        <div>
-          <header>
-            <h3>Simple map</h3>
-            <p>Marker is placed at {{ marker.lat }}, {{ marker.lng }}</p>
-            <p> Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }} </p>
-            <button @click="showLongText">Toggle Long popup</button>
-          </header>
-        </div>
-        <div>
-          <l-map
-            class="map"
-            ref="map"
-            :zoom="zoom"
-            :center="center"
-            @move="centerUpdate"
-            @update:zoom="zoomUpdate">
-            <l-tile-layer
-              :url="url"
-              :attribution="attribution"/>
-            <l-marker :lat-lng="marker">
-              <l-popup>
-                <div @click="popupClick">
-                  I am a tooltip
-                  <p v-show="showParagraph">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada.
-                  </p>
-                </div>
-              </l-popup>
-            </l-marker>
-          </l-map>
-        </div>
-      </div>
+  <div class="view-map">
+    <div class="container">
+      <h3 class="title">Simple map</h3>
+      <p>Marker is placed at {{ marker.lat }}, {{ marker.lng }}</p>
+      <p> Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }} </p>
+      <button class="button is-link" @click="showLongText"><span><font-awesome-icon icon="coffee" /></span>&nbsp;Toggle Long popup</button>
     </div>
-  </main>
+    <l-map
+      class="container-map"
+      ref="map"
+      :zoom="zoom"
+      :center="center"
+      @move="centerUpdate"
+      @update:zoom="zoomUpdate">
+      <l-tile-layer
+        :url="url"
+        :attribution="attribution"/>
+      <l-marker :lat-lng="marker">
+        <l-popup>
+          <div @click="popupClick">
+            I am a tooltip
+            <p v-show="showParagraph">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque sed pretium nisl, ut sagittis sapien. Sed vel sollicitudin nisi. Donec finibus semper metus id malesuada.
+            </p>
+          </div>
+        </l-popup>
+      </l-marker>
+    </l-map>
+  </div>
 </template>
 
 <style>
-#main-map {
-  height: 100%;
-  display:table-row;
-  width: 100%;
-  background: pink;
-}
-
-#main-map > div {
-  display: table-cell;
-}
-
-#main-map .container {
-  display: table;
-  width: 100%;
-  height: 100%;
-}
-
-#main-map .container > div {
-  display: table-row;
-}
-
-#main-map .container header {
-  display: table-cell;
-  height: 1%;
-}
-
-#main-map .container .map {
-  background: lightgreen;
-  height: 100%;
-  border: 1px solid green;
-}
-
 .leaflet-tile-pane {
   -webkit-filter: grayscale(90%);
   filter: grayscale(90%);
+}
+.view-map {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.view-map .container {
+  padding: 1em 0;
+}
+.container-map {
+  flex: 1;
 }
 </style>
 

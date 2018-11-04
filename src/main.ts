@@ -16,6 +16,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
 });
 
+import 'bulma/css/bulma.css';
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { faCoffee } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+library.add(faCoffee)
+Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+/*
 import VueMaterial from 'vue-material';
 import 'vue-material/dist/vue-material.min.css';
 import 'vue-material/dist/theme/default.css';
@@ -32,6 +40,7 @@ Vue.use(MdTable);
 Vue.use(MdField);
 Vue.use(MdDialog);
 Vue.use(MdToolbar);
+*/
 
 Vue.use(VueI18n);
 export const i18n = new VueI18n({

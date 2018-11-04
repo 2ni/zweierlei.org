@@ -9,6 +9,7 @@
       <div class="content" @dragenter="emphasizeDropBox" @mouseout="deemphasizeDropBox">
         <p>I take up the remaining height</p>
         <div class="md-layout md-gutter">
+
           <!-- table example -->
           <div class="md-layout-item md-small-size-100">
             <md-card>
@@ -76,6 +77,7 @@
               </md-card>
             </div>
           </div>
+
         </div>
       </div>
     </div>

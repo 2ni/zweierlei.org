@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Map from './views/Map.vue';
 import Test from './views/Test.vue';
+import Bulma from './views/Bulma.vue';
 
 Vue.use(Router);
 
@@ -35,5 +36,12 @@ export default new Router({
       component: Test,
       meta: { layout: 'empty' },
     },
+    {
+      path: '/bulma',
+      name: 'bulma',
+      component: Bulma,
+      meta: { layout: 'empty' },
+    },
+
   ],
 });

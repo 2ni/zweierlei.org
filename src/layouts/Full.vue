@@ -11,16 +11,27 @@ export default {
 </script>
 
 <template>
-  <section class="layout-base layout-full">
-    <header-bar />
-    <slot />
-    <footer-bar />
+  <section class="view-full">
+    <nav class="navbar has-background-warning">
+      <header-bar />
+    </nav>
+    <main>
+      <slot />
+    </main>
+    <footer class="has-background-warning">
+      <footer-bar />
+    </footer>
   </section>
 </template>
 
 <style>
-  section.layout-full {
-    height: 100%;
-    border: 3px solid red;
-  }
+.view-full {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.view-full main {
+  flex: 1;
+}
 </style>

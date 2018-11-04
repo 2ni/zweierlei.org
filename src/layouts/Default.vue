@@ -11,9 +11,13 @@ export default {
 </script>
 
 <template>
-  <section class="layout-base layout-default">
-    <header-bar />
+  <section class="layout-default">
+    <nav class="navbar has-background-warning">
+      <header-bar />
+    </nav>
     <slot />
-    <footer-bar />
+    <footer class="has-background-warning">
+      <footer-bar />
+    </footer>
   </section>
 </template>

@@ -1,18 +1,8 @@
 <template>
-  <footer>
-    <div>
-      Footer
-    </div>
-  </footer>
+  <div class="container">
+    Footer
+  </div>
 </template>
 
 <style>
-footer {
-  display: table-row;
-  background: lightgrey;
-}
-footer > div {
-  display: table-cell;
-  border: 1px solid grey;
-}
 </style>

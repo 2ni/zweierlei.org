@@ -1,11 +1,10 @@
 <template>
-  <section>
+  <section class="layout-empty">
     <slot />
   </section>
 </template>
-
 <style>
-section {
+.layout-empty {
   height: 100%;
 }
 </style>
