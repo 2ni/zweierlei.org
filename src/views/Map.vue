@@ -4,9 +4,16 @@
       <h3 class="title">Simple map</h3>
       <p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }} </p>
       <a class="button is-link is-medium" @click="showLongText">
-        <span class="icon has-text-warning">
-          <i class="fas fa-lg fa-toggle-on"></i>
-        </span>
+        <template v-if="showParagraph">
+          <span class="icon has-text-warning">
+            <i class="fas fa-lg fa-toggle-on"></i>
+          </span>
+        </template>
+        <template v-else>
+          <span class="icon has-text-warning">
+            <i class="fas fa-lg fa-toggle-off"></i>
+          </span>
+        </template>
         <span>Long popup</span>
       </a>
     </div>
@@ -35,6 +42,9 @@
 </template>
 
 <style>
+.test {
+  border: 1px solid black;
+}
 .leaflet-tile-pane {
   -webkit-filter: grayscale(90%);
   filter: grayscale(90%);
