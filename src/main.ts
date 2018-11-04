@@ -17,11 +17,15 @@ L.Icon.Default.mergeOptions({
 });
 
 import 'bulma/css/bulma.css';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCoffee } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-library.add(faCoffee)
-Vue.component('font-awesome-icon', FontAwesomeIcon)
+
+// see https://fontawesome.com/icons?d=gallery&m=free
+// https://github.com/FortAwesome/vue-fontawesome#get-started
+import { library, dom } from '@fortawesome/fontawesome-svg-core';
+dom.watch(); // be able to use <i class="fas fa-coffee"></i>
+import { faCoffee, faSyncAlt, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+library.add(faCoffee, faSyncAlt, faToggleOn, faToggleOff);
+Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 /*
 import VueMaterial from 'vue-material';

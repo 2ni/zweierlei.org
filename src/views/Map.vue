@@ -2,9 +2,13 @@
   <div class="view-map">
     <div class="container">
       <h3 class="title">Simple map</h3>
-      <p>Marker is placed at {{ marker.lat }}, {{ marker.lng }}</p>
-      <p> Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }} </p>
-      <button class="button is-link" @click="showLongText"><span><font-awesome-icon icon="coffee" /></span>&nbsp;Toggle Long popup</button>
+      <p>Center is at {{ currentCenter }} and the zoom is: {{ currentZoom }} </p>
+      <a class="button is-link is-medium" @click="showLongText">
+        <span class="icon has-text-warning">
+          <i class="fas fa-lg fa-toggle-on"></i>
+        </span>
+        <span>Long popup</span>
+      </a>
     </div>
     <l-map
       class="container-map"
