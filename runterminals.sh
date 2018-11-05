@@ -3,9 +3,8 @@
 -- https://www.iterm2.com/documentation-scripting.html
 
 tell application "iTerm2"
-  tell current window
-    create tab with default profile
-  end tell
+  create window with default profile
+  create tab with default profile
 
   tell first session of current tab of current window
     split horizontally with default profile
