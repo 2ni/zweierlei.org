@@ -10,7 +10,7 @@
           </span>
         </template>
         <template v-else>
-          <span class="icon has-text-warning">
+          <span class="icon has-color-grey">
             <i class="fas fa-lg fa-toggle-off"></i>
           </span>
         </template>
