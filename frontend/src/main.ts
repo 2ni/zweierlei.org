@@ -22,9 +22,29 @@ import 'bulma/css/bulma.css';
 // https://github.com/FortAwesome/vue-fontawesome#get-started
 import { library, dom } from '@fortawesome/fontawesome-svg-core';
 dom.watch(); // be able to use <i class="fas fa-coffee"></i>
-import { faCoffee, faSyncAlt, faToggleOn, faToggleOff, faLocationArrow, faBullseye } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCoffee,
+  faSyncAlt,
+  faToggleOn,
+  faToggleOff,
+  faLocationArrow,
+  faBullseye,
+  faMapMarker,
+  faRunning,
+  faUtensils,
+} from '@fortawesome/free-solid-svg-icons';
+library.add(
+  faCoffee,
+  faSyncAlt,
+  faToggleOn,
+  faToggleOff,
+  faLocationArrow,
+  faBullseye,
+  faMapMarker,
+  faRunning,
+  faUtensils,
+);
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-library.add(faCoffee, faSyncAlt, faToggleOn, faToggleOff, faLocationArrow, faBullseye);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 /*

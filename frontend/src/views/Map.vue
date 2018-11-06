@@ -1,7 +1,15 @@
 <template>
   <div class="view-map">
     <div class="container">
-      <h3 class="title">Simple map</h3>
+      <h3 class="title">
+        <span style="font-size: 15px;">
+          <span class="fa-stack">
+            <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>
+            <i class="fa-stack-1x fas fa-coffee" style="top:-7px"></i>
+          </span>
+        </span>
+        Simple map
+      </h3>
       <p class="subtitle">Center: {{ currentCenter.lat.toFixed(5) }}/{{ currentCenter.lng.toFixed(5) }}, Zoom: {{ currentZoom }} </p>
       <a class="button is-link is-medium" @click="showLongText">
         <template v-if="showParagraph">
@@ -27,7 +35,7 @@
       <l-tile-layer
         :url="url"
         :attribution="attribution"/>
-      <l-marker v-for="marker in markers" :key="marker.key" :lat-lng="marker.pos">
+        <l-marker v-for="marker in markers" :key="marker.key" :lat-lng="marker.pos" :icon="icons[marker.icon]">
         <l-popup>
           <div @click="popupClick">
             {{ marker.summary }}
@@ -40,9 +48,16 @@
 </template>
 
 <style>
-.iconCurrentPos {
+.mapIcons {
   text-align: center;
   line-height: 40px;
+}
+.mapLabels {
+  font-size: 18px;
+  top: -20px;
+}
+.mapLabels .fa-coffee, .fa-running {
+  top: -7px;
 }
 .leaflet-tile-pane {
   -webkit-filter: grayscale(90%);
@@ -71,6 +86,7 @@ export default {
     LMap,
     LTileLayer,
     LMarker,
+    LDivIcon,
     LPopup,
   },
   data() {
@@ -79,15 +95,34 @@ export default {
       center: L.latLng(47.3769, 8.5417),
       url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
       attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-      marker: L.latLng(47.3769, 8.5417),
       currentZoom: 13,
       currentCenter: L.latLng(47.3769, 8.5417),
       showParagraph: false,
       map: null,
+
+      icons: {
+        'coffee': L.divIcon({
+          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-coffee"></i></span></span>',
+          iconSize: [40, 40],
+          className: 'mapIcons mapLabels'
+        }),
+        'running': L.divIcon({
+          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-running"></i></span></span>',
+          iconSize: [40, 40],
+          className: 'mapIcons mapLabels',
+        }),
+        'utensils': L.divIcon({
+          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-utensils"></i></span></span>',
+          iconSize: [40, 40],
+          className: 'mapIcons mapLabels',
+        }),
+
+      },
       markers: [
         {key: 1, pos: {lat: 47.3769, lng: 8.5417}, summary: 'Zurich', tooltip: 'Best town in the world', icon: 'coffee'},
-        {key: 2, pos: {lat: 47.36087, lng: 8.53320}, summary: 'Chateau Chalet', tooltip: 'Some decent castle there', icon: 'coffee'},
-      ]
+        {key: 2, pos: {lat: 47.36095, lng: 8.53328}, summary: 'Chateau Chalet', tooltip: 'Some decent castle there', icon: 'running'},
+        {key: 3, pos: {lat: 47.38, lng: 8.55}, summary: 'Läckerli', tooltip: 'This speciality is special', icon: 'utensils'},
+      ],
     };
   },
   mounted() {
@@ -104,7 +139,7 @@ export default {
         icon: L.divIcon({
           html: '<span class="has-text-link"><i class="fas fa-bullseye fa-lg"></i></span>',
           iconSize: [40, 40],
-          className: 'iconCurrentPos',
+          className: 'mapIcons',
         }),
       });
       const circle = L.circle([pos.coords.latitude, pos.coords.longitude], pos.coords.accuracy / 2, {
