@@ -1,15 +1,13 @@
 <template>
   <div class="view-map">
     <div class="container">
-      <h3 class="title">
-        <span style="font-size: 15px;">
-          <span class="fa-stack">
+      <div class="block content is-large">
+          <span class="fa-stack" style="vertical-align: bottom; margin-right: 2px;">
             <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>
             <i class="fa-stack-1x fas fa-coffee" style="top:-7px"></i>
           </span>
-        </span>
-        Simple map
-      </h3>
+        <span class="title">Simple Map</span>
+      </div>
       <p class="subtitle">Center: {{ currentCenter.lat.toFixed(5) }}/{{ currentCenter.lng.toFixed(5) }}, Zoom: {{ currentZoom }} </p>
       <a class="button is-link is-medium" @click="showLongText">
         <template v-if="showParagraph">
