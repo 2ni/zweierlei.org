@@ -116,17 +116,21 @@ export default {
         }),
 
       },
+      markers: [],
+      /*
       markers: [
         {key: 1, pos: {lat: 47.3769, lng: 8.5417}, summary: 'Zurich', tooltip: 'Best town in the world', icon: 'coffee'},
         {key: 2, pos: {lat: 47.36095, lng: 8.53328}, summary: 'Chateau Chalet', tooltip: 'Some decent castle there', icon: 'running'},
         {key: 3, pos: {lat: 47.38, lng: 8.55}, summary: 'Läckerli', tooltip: 'This speciality is special', icon: 'utensils'},
       ],
+      */
     };
   },
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject;
       navigator.geolocation.getCurrentPosition(this.moveToCurrentPosition);
+
     });
   },
   methods: {
@@ -148,6 +152,18 @@ export default {
       });
       this.map.addLayer(marker);
       this.map.addLayer(circle);
+
+      const icons = ['coffee', 'running', 'utensils'];
+      for (let i=0; i<100; i++) {
+        this.markers.push({
+          key: i,
+          pos: {lat: Math.random()*0.1+this.center.lat-.05, lng: Math.random()*.1+this.center.lng-.05},
+          summary: 'Foo',
+          tooltip: 'Description',
+          icon: icons[Math.round(Math.random()*2)]
+        });
+      }
+
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
