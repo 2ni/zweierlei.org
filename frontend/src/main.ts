@@ -49,36 +49,13 @@ library.add(
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
-/*
-import VueMaterial from 'vue-material';
-import 'vue-material/dist/vue-material.min.css';
-import 'vue-material/dist/theme/default.css';
-Vue.use(VueMaterial);
-// import VueMaterial from 'vue-material';
-// Vue.use(VueMaterial);
-
-import 'vue-material/dist/vue-material.min.css';
-import { MdButton, MdLayout, MdCard, MdTable, MdField, MdDialog, MdToolbar } from 'vue-material/dist/components';
-Vue.use(MdLayout);
-Vue.use(MdButton);
-Vue.use(MdCard);
-Vue.use(MdTable);
-Vue.use(MdField);
-Vue.use(MdDialog);
-Vue.use(MdToolbar);
-*/
-
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
   locale: 'en',
   fallbackLocale: 'en',
   messages: {
-    en: {
-      hello: 'Hello',
-    },
-    de: {
-      hello: 'Hallo',
-    },
+    en: require('@/locales/en.json'),
+    de: require('@/locales/de.json'),
   },
 });
 
