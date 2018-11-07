@@ -1,45 +1,23 @@
 <template>
   <div class="container">
-    <div class="columns">
-      <div class="column">
+    <div class="columns is-multiline">
+      <div class="column is-one-third" v-for="story in stories">
+
         <div class="card">
+          <div class="card-image">
+            <figure class="image is-4by3">
+              <img :src="story.img ? story.img : 'https://bulma.io/images/placeholders/1280x960.png'" alt="foo">
+            </figure>
+          </div>
           <div class="card-header">
-            <p class="card-header-title has-background-dark has-text-white">Some Title</p>
+            <p class="card-header-title has-background-dark has-text-white">{{ story.title }}</p>
           </div>
           <div class="card-content">
-            <p class="content is-small">Some text</p>
+            <p class="content is-small">{{ story.description }}</p>
           </div>
         </div>
-      </div>
-      <div class="column">
-        <div class="box">
-          <p>Some more text</p>
-        </div>
-      </div>
-      <div class="column">
-        <div class="box">
-          <p>Enough is enough</p>
-        </div>
-      </div>
-    </div>
 
-    <div class="columns">
-      <div class="column">
-        <div class="box has-background-info">
-          <p>What do you want</p>
-        </div>
       </div>
-      <div class="column">
-        <div class="box">
-          <p>Some cookies.</p>
-        </div>
-      </div>
-      <div class="column">
-        <div class="box">
-          <p>And some love.</p>
-        </div>
-      </div>
-
     </div>
 
     <!--
@@ -53,16 +31,33 @@
 import { Component, Vue } from 'vue-property-decorator';
 import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
-@Component({
+export default {
+  name: 'Home',
   components: {
     HelloWorld,
   },
-})
-export default class Home extends Vue {}
+  data() {
+    return {
+      stories: [
+        {id: 1, title: 'Some Title', description: 'Some text', img: 'https://picsum.photos/1280x960/?'+Math.random()},
+        {id: 2, title: 'Beeing a philosoph', description: '... is like a flower in the prairie, a vessel in the wind, an elefant in the shower. Almost like stars in the sky.', img:'https://picsum.photos/1280x960/?'+Math.random()},
+        {id: 3, title: 'Do some peace', description: 'And have a break.', img: 'https://picsum.photos/1280x960/?'+Math.random()},
+        {id: 4, title: 'Newbie', description: 'Ich hab das noch nie gemacht, also bin ich wahrscheinlich gut darin - Anne Kjaer Riechert', img: 'https://picsum.photos/1280x960/?'+Math.random()},
+        {id: 5, title: 'Come get some', description: 'DukeNukem'},
+      ],
+    };
+  },
+}
 </script>
 
 <style scoped>
 .container {
   padding: 1em 0;
+}
+.card-header {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  opacity: .8;
 }
 </style>
