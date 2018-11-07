@@ -2,13 +2,13 @@
   <div class="container">
     <div class="navbar-brand">
       <a class="navbar-item">zweierlei.org</a>
-      <span class="navbar-burger burger" data-target="navbarMenu">
+      <span class="navbar-burger burger" data-target="navbarMenu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
         <span></span>
         <span></span>
         <span></span>
       </span>
     </div>
-    <div id="navbarMenu" class="navbar-menu">
+    <div id="navbarMenu" class="navbar-menu" :class="{ 'is-active': showNav }">
       <div class="navbar-end">
         <router-link
           v-for="(navItem,index) in navItems"
@@ -49,6 +49,7 @@ export default {
   data() {
     return {
       navItems: ['Home', 'About', 'Map', 'Test', 'Bulma'],
+      showNav: false,
     };
   },
 };
