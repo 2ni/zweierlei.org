@@ -135,7 +135,7 @@ export default {
       this.center = L.latLng(pos.coords.latitude, pos.coords.longitude);
       const marker = L.marker([pos.coords.latitude, pos.coords.longitude], {
         icon: L.divIcon({
-          html: '<span class="has-text-link"><i class="fas fa-bullseye fa-lg"></i></span>',
+          html: '<span class="has-text-link"><i class="fas fa-crosshairs fa-lg"></i></span>',
           iconSize: [40, 40],
           className: 'mapIcons',
         }),

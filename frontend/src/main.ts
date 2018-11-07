@@ -32,6 +32,7 @@ import {
   faMapMarker,
   faRunning,
   faUtensils,
+  faCrosshairs,
 } from '@fortawesome/free-solid-svg-icons';
 library.add(
   faCoffee,
@@ -43,6 +44,7 @@ library.add(
   faMapMarker,
   faRunning,
   faUtensils,
+  faCrosshairs,
 );
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 Vue.component('font-awesome-icon', FontAwesomeIcon);
