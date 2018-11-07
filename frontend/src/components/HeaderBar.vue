@@ -10,11 +10,13 @@
     </div>
     <div id="navbarMenu" class="navbar-menu">
       <div class="navbar-end">
-        <router-link class="navbar-item is-active" to="/">Home</router-link>
-        <router-link class="navbar-item" to="/about">About</router-link>
-        <router-link class="navbar-item" to="/map">Map</router-link>
-        <router-link class="navbar-item" to="/test">Test</router-link>
-        <router-link class="navbar-item" to="/bulma">Bulma</router-link>
+        <router-link
+          v-for="(navItem,index) in navItems"
+          class="navbar-item"
+          v-bind:class="currentRoute == navItem.toLowerCase() ? 'is-active':''"
+          :to="'/'+(index==0 ? '' : navItem.toLowerCase())">
+          {{ navItem }}
+        </router-link>
         <ul class="navbar-item">
           <li v-for="(v,lang) in this.$i18n.messages">
             <a v-if="lang != currentLocale" :href="lang" v-on:click="changeLang(lang, $event)">{{lang}}</a>
@@ -40,6 +42,14 @@ export default {
     currentLocale() {
       return this.$i18n.locale;
     },
+    currentRoute() {
+      return this.$route.name;
+    },
+  },
+  data() {
+    return {
+      navItems: ['Home', 'About', 'Map', 'Test', 'Bulma'],
+    };
   },
 };
 </script>
