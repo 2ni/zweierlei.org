@@ -1,0 +1,4 @@
+- https://stackoverflow.com/questions/41759225/how-can-i-inject-data-get-in-router-beforeeach-in-my-vuejs-component
+- https://stackoverflow.com/questions/50321530/prefix-routes-with-locale-in-vue-js-using-vue-i18n
+- https://phraseapp.com/blog/posts/how-to-build-spa-vue-js-i18n/
+- https://blog.sqreen.io/authentication-best-practices-vue/
