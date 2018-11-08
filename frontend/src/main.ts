@@ -6,6 +6,8 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
+import {messages, defaultLocale } from './locales/lang.json';
+
 import 'leaflet.icon.glyph';
 
 delete L.Icon.Default.prototype._getIconUrl;
@@ -49,14 +51,31 @@ library.add(
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
+let locale = window.location.pathname.replace(/^\/([^\/]+).*/i,'$1');
+console.log(locale);
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
-  locale: 'en',
-  fallbackLocale: 'en',
-  messages: {
-    en: require('@/locales/en.json'),
-    de: require('@/locales/de.json'),
-  },
+  locale: (locale.trim().length && locale != "/") ? locale : defaultLocale,
+  fallbackLocale: defaultLocale,
+  messages,
+});
+
+router.beforeEach((to, from, next) => {
+  console.log(to.params);
+  i18n.locale = to.params.locale;
+  next();
+/*
+  let locale = to.params.locale;
+  if (!locale) {
+    console.log(locale, to.path);
+    //router.go(i18n.fallbackLocale + to.path);
+    locale = i18n.fallbackLocale;
+  }
+  i18n.locale = locale;
+
+  //next({path: '/'+from.params.locale+to.fullPath});
+  next();
+*/
 });
 
 import Default from './layouts/Default.vue';
