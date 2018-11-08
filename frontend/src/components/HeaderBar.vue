@@ -11,16 +11,16 @@
     <div id="navbarMenu" class="navbar-menu" :class="{ 'is-active': showNav }">
       <div class="navbar-end">
         <router-link
-          v-for="(navItem,index) in navItems"
+          v-for="navItem in navItems"
           class="navbar-item"
-          v-bind:class="currentRoute == navItem.toLowerCase() ? 'is-active':''"
-          :to="'/'+(index==0 ? '' : navItem.toLowerCase())">
-          {{ navItem }}
+          v-bind:class="$route.name == navItem.name ? 'is-active' : ''"
+          :to="'/' + $route.params.locale + '/' + navItem.path">
+          {{ navItem.name }}
         </router-link>
         <ul class="navbar-item">
           <li v-for="(v,lang) in this.$i18n.messages">
-            <a v-if="lang != currentLocale" :href="lang" v-on:click="changeLang(lang, $event)">{{lang}}</a>
-            <span v-if="lang == currentLocale">{{lang}}</span>
+            <a v-if="lang != $i18n.locale" :href="'/' + lang + '/' + $route.name" v-on:click="changeLang(lang, $event)">{{ lang }}</a>
+            <span v-if="lang == $i18n.locale">{{ lang }}</span>
           </li>
         </ul>
       </div>
@@ -33,24 +33,29 @@ export default {
   methods: {
     changeLang(lang, event) {
       this.$i18n.locale = lang;
+      this.$router.push('/' + lang + '/' + this.$route.name);
       if (event) {
         event.preventDefault();
       }
     },
   },
-  computed: {
-    currentLocale() {
-      return this.$i18n.locale;
-    },
-    currentRoute() {
-      return this.$route.name;
-    },
-  },
   data() {
     return {
-      navItems: ['Home', 'About', 'Map', 'Test', 'Bulma'],
+      navItems: [],
       showNav: false,
     };
+  },
+  created() {
+    let navItems = [];
+    this.$router.options.routes.forEach(elem => {
+      if (elem.children) {
+        elem.children.forEach(child => {
+          if (child.path != '*') {
+            this.navItems.push({path: child.path, name: child.name});
+          }
+        });
+      }
+    });
   },
 };
 </script>

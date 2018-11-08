@@ -52,7 +52,6 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 Vue.component('font-awesome-icon', FontAwesomeIcon);
 
 let locale = window.location.pathname.replace(/^\/([^\/]+).*/i,'$1');
-console.log(locale);
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
   locale: (locale.trim().length && locale != "/") ? locale : defaultLocale,
@@ -61,18 +60,9 @@ export const i18n = new VueI18n({
 });
 
 router.beforeEach((to, from, next) => {
-  console.log(to.params);
   i18n.locale = to.params.locale;
   next();
 /*
-  let locale = to.params.locale;
-  if (!locale) {
-    console.log(locale, to.path);
-    //router.go(i18n.fallbackLocale + to.path);
-    locale = i18n.fallbackLocale;
-  }
-  i18n.locale = locale;
-
   //next({path: '/'+from.params.locale+to.fullPath});
   next();
 */

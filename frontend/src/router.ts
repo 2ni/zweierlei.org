@@ -28,12 +28,12 @@ export default new Router({
       children: [
         {
           path: '',
-          name: 'home',
+          name: 'Home',
           component: Home,
         },
         {
           path: 'about',
-          name: 'about',
+          name: 'About',
           // route level code-splitting
           // this generates a separate chunk (about.[hash].js) for this route
           // which is lazy-loaded when the route is visited.
@@ -41,25 +41,25 @@ export default new Router({
         },
         {
           path: 'map',
-          name: 'map',
+          name: 'Map',
           component: Map,
           meta: { layout: 'full' },
         },
         {
           path: 'test',
-          name: 'test',
+          name: 'Test',
           component: Test,
           meta: { layout: 'empty' },
         },
         {
           path: 'bulma',
-          name: 'bulma',
+          name: 'Bulma',
           component: Bulma,
           meta: { layout: 'empty' },
         },
         {
           path: '*',
-          name: 'notfound',
+          name: 'Notfound',
           component: PageNotFound,
         },
         ,
