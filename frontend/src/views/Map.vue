@@ -38,11 +38,24 @@
           </div>
         </l-popup>
       </l-marker>
+      <div v-if='isMapLoading' class="is-overlay is-size-2 has-text-weight-bold">
+        <p>Detecting your position...</p>
+      </div>
     </l-map>
   </div>
 </template>
 
 <style>
+.is-overlay {
+  opacity: 0.8;
+}
+.is-overlay p {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
 .mapIcons {
   text-align: center;
   line-height: 40px;
@@ -95,6 +108,7 @@ export default {
       currentZoom: 13,
       currentCenter: L.latLng(47.3769, 8.5417),
       showParagraph: false,
+      positionFound: false,
       map: null,
 
       icons: {
@@ -165,12 +179,17 @@ export default {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject;
       navigator.geolocation.getCurrentPosition(this.moveToCurrentPosition);
-
     });
+  },
+  computed: {
+    isMapLoading() {
+      return !this.positionFound;
+    },
   },
   methods: {
     // https://stackoverflow.com/questions/49099987/use-marker-icon-with-only-awesome-fonts-no-surrounding-balloon
     moveToCurrentPosition(pos) {
+      this.positionFound = true;
       this.center = L.latLng(pos.coords.latitude, pos.coords.longitude);
       const marker = L.marker([pos.coords.latitude, pos.coords.longitude], {
         icon: L.divIcon({
