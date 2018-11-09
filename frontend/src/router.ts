@@ -7,7 +7,7 @@ import Bulma from './views/Bulma.vue';
 import Base from './views/Base.vue';
 import PageNotFound from './views/PageNotFound.vue';
 
-import {defaultLocale} from './locales/lang.json';
+import { defaultLocale } from './locales/lang.json';
 
 Vue.use(Router);
 
@@ -18,11 +18,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/'+defaultLocale, // `/${defaultLocale}`
+      redirect: '/' + defaultLocale, // `/${defaultLocale}`
     },
     {
-      //path: `/(de|en)`,
-      //path: '/:locale([a-z]{2})',
+      // path: `/(de|en)`,
+      // path: '/:locale([a-z]{2})',
       path: '/:locale(en|de)',
       component: Base,
       children: [
@@ -62,19 +62,18 @@ export default new Router({
           name: 'Notfound',
           component: PageNotFound,
         },
-        ,
       ],
     },
     {
-      path: "/([a-z]{2}/.*)",
+      path: '/([a-z]{2}/.*)',
       redirect: (to: any) => {
-        return '/'+defaultLocale+to.path.replace(/^\/[^\/]+/, '');
+        return '/' + defaultLocale + to.path.replace(/^\/[^\/]+/, '');
       },
     },
     {
       path: '/*',
       redirect: (to: any) => {
-      return '/'+defaultLocale+to.path;
+      return '/' + defaultLocale + to.path;
       },
     },
   ],

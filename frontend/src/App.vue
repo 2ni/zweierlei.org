@@ -10,7 +10,7 @@ const defaultLayout = 'default';
 export default {
   computed: {
     layout(): string {
-      return (this.$route.meta.layout || defaultLayout) + '-layout';
+      return ((this as any).$route.meta.layout || defaultLayout) + '-layout';
     },
   },
 };

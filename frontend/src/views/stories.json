@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "title": "Some Title",
+    "description": "Some text",
+    "img": "https://picsum.photos/1280x960/",
+    "activity": "coffee"
+  },
+  {
+    "id": 2,
+    "title": "Beeing a philosoph",
+    "description": "... is like a flower in the prairie, a vessel in the wind, an elefant in the shower. Almost like stars in the sky.",
+    "img": "https://picsum.photos/1280x960/",
+    "activity": "running"
+  },
+  {
+    "id": 3,
+    "title": "Do some peace",
+    "description": "And have a break.",
+    "img": "https://picsum.photos/1280x960/"
+  },
+  {
+    "id": 4,
+    "title": "Newbie",
+    "description": "Ich hab das noch nie gemacht, also bin ich wahrscheinlich gut darin - Anne Kjaer Riechert",
+    "img": "https://picsum.photos/1280x960/",
+    "activity": "utensils"
+  },
+  {
+    "id": 5,
+    "title": "Come get some",
+    "description": "DukeNukem",
+    "activity": "running"
+  }
+]

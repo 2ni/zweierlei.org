@@ -135,7 +135,7 @@ export default {
 
       Array
           .from(Array(this.photoCount).keys())
-          .map(x => {
+          .map((x) => {
             data.append(event.target.name, event.target.files[x], event.target.files[x].name);
           });
 
@@ -146,11 +146,11 @@ export default {
       this.currentStatus = STATUS_UPLOADING;
       this.isDragging = false;
 
-      upload(data).then(wait(1000)).then(x => {
+      upload(data).then(wait(1000)).then((x) => {
         this.photos = this.photos.concat(x);
         this.currentStatus = STATUS_SUCCESS;
       })
-      .catch(err => {
+      .catch((err) => {
         this.error = err. response;
         this.currentStatus = STATUS_ERROR;
       });

@@ -11,6 +11,7 @@
     <div id="navbarMenu" class="navbar-menu" :class="{ 'is-active': showNav }">
       <div class="navbar-end">
         <router-link
+          :key="navItem.name"
           v-for="navItem in navItems"
           class="navbar-item"
           v-bind:class="$route.name == navItem.name ? 'is-active' : ''"
@@ -19,7 +20,12 @@
         </router-link>
         <ul class="navbar-item">
           <li v-for="(v,lang) in this.$i18n.messages">
-            <a v-if="lang != $i18n.locale" :href="'/' + lang + '/' + $route.name" v-on:click="changeLang(lang, $event)">{{ lang }}</a>
+            <a
+              v-if="lang != $i18n.locale"
+              :href="'/' + lang + $route.path.replace(/^\/[^\/]*/, '')"
+              v-on:click="changeLang(lang, $event)">
+              {{ lang }}
+            </a>
             <span v-if="lang == $i18n.locale">{{ lang }}</span>
           </li>
         </ul>
@@ -46,11 +52,10 @@ export default {
     };
   },
   created() {
-    let navItems = [];
-    this.$router.options.routes.forEach(elem => {
+    this.$router.options.routes.forEach((elem) => {
       if (elem.children) {
-        elem.children.forEach(child => {
-          if (child.path != '*') {
+        elem.children.forEach((child) => {
+          if (child.path !== '*') {
             this.navItems.push({path: child.path, name: child.name});
           }
         });

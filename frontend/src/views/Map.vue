@@ -2,10 +2,7 @@
   <div class="view-map">
     <div class="container">
       <div class="block content is-large">
-          <span class="fa-stack" style="vertical-align: bottom; margin-right: 2px;">
-            <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>
-            <i class="fa-stack-1x fas fa-coffee" style="top:-7px"></i>
-          </span>
+        <MapIcon type="running" />
         <span class="title">Simple Map</span>
       </div>
       <p class="subtitle">Center: {{ currentCenter.lat.toFixed(5) }}/{{ currentCenter.lng.toFixed(5) }}, Zoom: {{ currentZoom }} </p>
@@ -77,6 +74,7 @@
 <script>
 import 'leaflet/dist/leaflet.css';
 import { LMap, LTileLayer, LMarker, LDivIcon, LPopup } from 'vue2-leaflet';
+import MapIcon from '@/components/MapIcon.vue';
 
 export default {
   name: 'Example',
@@ -86,6 +84,7 @@ export default {
     LMarker,
     LDivIcon,
     LPopup,
+    MapIcon,
   },
   data() {
     return {
@@ -99,18 +98,36 @@ export default {
       map: null,
 
       icons: {
-        'coffee': L.divIcon({
-          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-coffee"></i></span></span>',
-          iconSize: [40, 40],
-          className: 'mapIcons mapLabels'
-        }),
-        'running': L.divIcon({
-          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-running"></i></span></span>',
+        coffee: L.divIcon({
+          html: '\
+<span class="is-large">\
+  <span class="fa-stack">\
+    <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>\
+    <i class="fa-stack-1x fas fa-coffee"></i>\
+  </span>\
+</span>',
           iconSize: [40, 40],
           className: 'mapIcons mapLabels',
         }),
-        'utensils': L.divIcon({
-          html:'<span class="is-large"><span class="fa-stack"><i class="fa-stack-2x fas fa-map-marker has-text-warning"></i><i class="fa-stack-1x fas fa-utensils"></i></span></span>',
+        running: L.divIcon({
+          html: '\
+<span class="is-large">\
+  <span class="fa-stack">\
+    <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>\
+    <i class="fa-stack-1x fas fa-running"></i>\
+  </span>\
+</span>',
+          iconSize: [40, 40],
+          className: 'mapIcons mapLabels',
+        }),
+        utensils: L.divIcon({
+          html: '\
+<span class="is-large">\
+  <span class="fa-stack">\
+    <i class="fa-stack-2x fas fa-map-marker has-text-warning"></i>\
+    <i class="fa-stack-1x fas fa-utensils"></i>\
+  </span>\
+</span>',
           iconSize: [40, 40],
           className: 'mapIcons mapLabels',
         }),
@@ -119,9 +136,27 @@ export default {
       markers: [],
       /*
       markers: [
-        {key: 1, pos: {lat: 47.3769, lng: 8.5417}, summary: 'Zurich', tooltip: 'Best town in the world', icon: 'coffee'},
-        {key: 2, pos: {lat: 47.36095, lng: 8.53328}, summary: 'Chateau Chalet', tooltip: 'Some decent castle there', icon: 'running'},
-        {key: 3, pos: {lat: 47.38, lng: 8.55}, summary: 'Läckerli', tooltip: 'This speciality is special', icon: 'utensils'},
+        {
+          key: 1,
+          pos: { lat: 47.3769, lng: 8.5417 },
+          summary: 'Zurich',
+          tooltip: 'Best town in the world',
+          icon: 'coffee'
+        },
+        {
+          key: 2,
+          pos: {lat: 47.36095, lng: 8.53328},
+          summary: 'Chateau Chalet',
+          tooltip: 'Some decent castle there',
+          icon: 'running'
+        },
+        {
+          key: 3,
+          pos: {lat: 47.38, lng: 8.55},
+          summary: 'Läckerli',
+          tooltip: 'This speciality is special',
+          icon: 'utensils'
+        },
       ],
       */
     };
@@ -154,13 +189,15 @@ export default {
       this.map.addLayer(circle);
 
       const icons = ['coffee', 'running', 'utensils'];
-      for (let i=0; i<100; i++) {
+      for (let i = 0; i < 100; i++) {
         this.markers.push({
           key: i,
-          pos: {lat: Math.random()*0.1+this.center.lat-.05, lng: Math.random()*.1+this.center.lng-.05},
+          pos: {
+            lat: Math.random() * .1 + this.center.lat - .05,
+            lng: Math.random() * .1 + this.center.lng - .05},
           summary: 'Foo',
           tooltip: 'Description',
-          icon: icons[Math.round(Math.random()*2)]
+          icon: icons[Math.round(Math.random() * 2)],
         });
       }
 

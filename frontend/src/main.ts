@@ -6,11 +6,11 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-import {messages, defaultLocale } from './locales/lang.json';
+import { messages, defaultLocale } from './locales/lang.json';
 
 import 'leaflet.icon.glyph';
 
-delete L.Icon.Default.prototype._getIconUrl;
+// delete L.Icon.Default.prototype._getIconUrl; // needed to display default icon
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -48,18 +48,21 @@ library.add(
   faUtensils,
   faCrosshairs,
 );
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-Vue.component('font-awesome-icon', FontAwesomeIcon);
+// import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+// Vue.component('font-awesome-icon', FontAwesomeIcon);
+/* tslint:disable:no-var-requires */
+const fontawesome = require('@fortawesome/vue-fontawesome');
+Vue.component('font-awesome-icon', fontawesome.FontAwesomeIcon);
 
-let locale = window.location.pathname.replace(/^\/([^\/]+).*/i,'$1');
+const locale = window.location.pathname.replace(/^\/([^\/]+).*/i, '$1');
 Vue.use(VueI18n);
 export const i18n = new VueI18n({
-  locale: (locale.trim().length && locale != "/") ? locale : defaultLocale,
+  locale: (locale.trim().length && locale !== '/') ? locale : defaultLocale,
   fallbackLocale: defaultLocale,
   messages,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to: any, from: any, next: any) => {
   i18n.locale = to.params.locale;
   next();
 /*
