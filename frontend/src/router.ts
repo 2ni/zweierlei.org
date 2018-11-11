@@ -3,6 +3,7 @@ import Router from 'vue-router';
 import Home from './views/Home.vue';
 import Map from './views/Map.vue';
 import Test from './views/Test.vue';
+import Form from './views/Form.vue';
 import Bulma from './views/Bulma.vue';
 import Base from './views/Base.vue';
 import PageNotFound from './views/PageNotFound.vue';
@@ -46,8 +47,13 @@ export default new Router({
           meta: { layout: 'full' },
         },
         {
+          path: 'form',
+          name: 'Form',
+          component: Form,
+        },
+        {
           path: 'test',
-          name: 'Test',
+          name: 'Full page',
           component: Test,
           meta: { layout: 'empty' },
         },
