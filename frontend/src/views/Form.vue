@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" @dragenter="emphasizeDropBox" @mouseout="deemphasizeDropBox">
 
       <div class="tile is-ancestor">
         <div class="tile is-4 is-parent">
@@ -12,13 +12,12 @@
           <div class="tile is-child box">
             <p class="title">Three</p>
             <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Etiam semper diam at erat pulvinar, at pulvinar felis blandit. Vestibulum volutpat tellus diam, consequat gravida libero rhoncus ut. Morbi maximus, leo sit amet vehicula eleifend, nunc dui porta orci, quis semper odio felis ut quam.</p>
-            <p>Suspendisse varius ligula in molestie lacinia. Maecenas varius eget ligula a sagittis. Pellentesque interdum, nisl nec interdum maximus, augue diam porttitor lorem, et sollicitudin felis neque sit amet erat. Maecenas imperdiet felis nisi, fringilla luctus felis hendrerit sit amet. Aenean vitae gravida diam, finibus dignissim turpis. Sed eget varius ligula, at volutpat tortor.</p>
             <p>Integer sollicitudin, tortor a mattis commodo, velit urna rhoncus erat, vitae congue lectus dolor consequat libero. Donec leo ligula, maximus et pellentesque sed, gravida a metus. Cras ullamcorper a nunc ac porta. Aliquam ut aliquet lacus, quis faucibus libero. Quisque non semper leo.</p>
           </div>
         </div>
       </div>
 
-      <div class="tile is-ancestor" @dragenter="emphasizeDropBox" @mouseout="deemphasizeDropBox">
+      <div class="tile is-ancestor">
 
         <!-- table example -->
         <div class="tile is-parent">
@@ -52,7 +51,7 @@
 
         <!-- drag & drop file upload -->
         <div class="tile is-parent">
-          <div class="tile is-child notification is-primary is-paddingless card">
+          <div class="tile is-child notification is-warning is-paddingless card">
             <header class="card-header">
               <p class="card-header-title">File upload</p>
             </header>
@@ -61,6 +60,27 @@
                 <pre>Error! {{ this.error }}</pre>
               </p>
               <form enctype="multipart/form-data" novalidate v-if="isInitial || isUploading || isSuccess">
+                <div class="field">
+                  <p class="control has-icons-left has-icons-right">
+                    <input class="input" type="text" placeholder="Give some meaningful title">
+                    <span class="icon is-small is-left">
+                      <i class="fas fa-coffee"></i>
+                    </span>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-check has-text-success"></i>
+                    </span>
+                  </p>
+                  <p class="help is-success">Title</p>
+                </div>
+                <div class="field">
+                  <p class="control has-icons-right">
+                    <textarea class="textarea is-danger" placeholder="Meaningful description"></textarea>
+                    <span class="icon is-small is-right">
+                      <i class="fas fa-times has-text-danger"></i>
+                    </span>
+                  </p>
+                  <p class="help is-danger">Mandatory field!</p>
+                </div>
                 <div class="dropField" v-show="isDragging || isUploading">
                   <p v-if="isInitial">Drop Files anywhere</p>
                   <p v-if="isUploading">Uploading {{ photoCount }} file(s)</p>
@@ -80,6 +100,11 @@
                       </span>
                     </span>
                     </label>
+                  </div>
+                </div>
+                <div class="field">
+                  <div class="control">
+                    <button class="button is-link">Save</button>
                   </div>
                 </div>
               </form>
@@ -232,7 +257,6 @@ export default {
   height: 100%;
   position: absolute;
   cursor: pointer;
-  border: 10px solid black;
   opacity: 0;
 }
 

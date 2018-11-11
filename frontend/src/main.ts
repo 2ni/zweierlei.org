@@ -36,6 +36,8 @@ import {
   faUtensils,
   faCrosshairs,
   faUpload,
+  faCheck,
+  faTimes,
 } from '@fortawesome/free-solid-svg-icons';
 library.add(
   faCoffee,
@@ -49,6 +51,8 @@ library.add(
   faUtensils,
   faCrosshairs,
   faUpload,
+  faCheck,
+  faTimes,
 );
 // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // Vue.component('font-awesome-icon', FontAwesomeIcon);
