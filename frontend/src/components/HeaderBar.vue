@@ -61,7 +61,7 @@ export default {
     this.$router.options.routes.forEach((elem) => {
       if (elem.children) {
         elem.children.forEach((child) => {
-          if (child.path !== '*') {
+          if (child.path !== '*' && child.name) {
             this.navItems.push({path: child.path, name: child.name});
           }
         });
