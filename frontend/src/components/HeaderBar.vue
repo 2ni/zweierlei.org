@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="navbar-brand">
-      <a class="navbar-item">zweierlei.org</a>
+      <router-link class="navbar-item" to="home">zweierlei.org</router-link>
       <span class="navbar-burger burger" data-target="navbarMenu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
         <span></span>
         <span></span>
@@ -15,14 +15,14 @@
           v-for="navItem in navItems"
           class="navbar-item"
           v-bind:class="$route.name == navItem.name ? 'is-active' : ''"
-          :to="'/' + $route.params.locale + '/' + navItem.path">
-          {{ navItem.name }}
+          :to="navItem.path">
+          {{ navItem.path === 'login' && isLoggedIn ? 'Logout' : navItem.name }}
         </router-link>
         <ul class="navbar-item">
           <li v-for="(v,lang) in this.$i18n.messages">
             <a
               v-if="lang != $i18n.locale"
-              :href="'/' + lang + $route.path.replace(/^\/[^\/]*/, '')"
+              :href="'/' + lang + $route.fullPath.replace(/^\/[^\/]*/, '')"
               v-on:click="changeLang(lang, $event)">
               {{ lang }}
             </a>
@@ -39,7 +39,8 @@ export default {
   methods: {
     changeLang(lang, event) {
       this.$i18n.locale = lang;
-      this.$router.push('/' + lang + '/' + this.$route.name);
+      const path = this.$route.fullPath.replace(/^\/[^\|]*\//, '');
+      this.$router.push('/' + lang + '/' + path);
       if (event) {
         event.preventDefault();
       }
@@ -50,6 +51,11 @@ export default {
       navItems: [],
       showNav: false,
     };
+  },
+  computed: {
+    isLoggedIn() {
+      return this.$store.state.authentication.status === 'loggedIn';
+    },
   },
   created() {
     this.$router.options.routes.forEach((elem) => {

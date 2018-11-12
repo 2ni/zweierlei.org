@@ -6,6 +6,9 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
+import { fakeAuthentication } from './helpers';
+fakeAuthentication();
+
 import { messages, defaultLocale } from './locales/lang.json';
 
 import 'leaflet.icon.glyph';
@@ -38,6 +41,8 @@ import {
   faUpload,
   faCheck,
   faTimes,
+  faEnvelope,
+  faLock,
 } from '@fortawesome/free-solid-svg-icons';
 library.add(
   faCoffee,
@@ -53,6 +58,8 @@ library.add(
   faUpload,
   faCheck,
   faTimes,
+  faEnvelope,
+  faLock,
 );
 // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // Vue.component('font-awesome-icon', FontAwesomeIcon);
@@ -70,6 +77,15 @@ export const i18n = new VueI18n({
 
 router.beforeEach((to: any, from: any, next: any) => {
   i18n.locale = to.params.locale;
+
+  const loggedIn = localStorage.getItem('user');
+  if (to.meta.auth && !loggedIn) {
+    return next({
+      path: '/' + to.params.locale + '/login',
+      query: { f: to.path },
+    });
+  }
+
   next();
 /*
   //next({path: '/'+from.params.locale+to.fullPath});
