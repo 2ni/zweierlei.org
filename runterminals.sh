@@ -10,6 +10,7 @@ tell application "iTerm2"
   end tell
 
   tell first session of current tab of current window
+    set name to "frontend"
     set name to "bash"
     write text "cd frontend/src; clear"
   end tell
@@ -19,7 +20,8 @@ tell application "iTerm2"
   end tell
 
   tell first session of current tab of current window
-    write text "cd frontend/src; clear"
+    set name to "backend"
+    write text "cd backend; clear"
   end tell
 
   create window with default profile
@@ -33,8 +35,8 @@ tell application "iTerm2"
   end tell
 
   tell second session of current tab of current window
-    set name to "Database"
-    write text "cd ~/Downloads"
+    set name to "Flask"
+    write text "cd backend; make server"
   end tell
 
 #  tell _mysession
