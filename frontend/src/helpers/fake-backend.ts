@@ -1,3 +1,7 @@
+/*
+ * http://jasonwatmore.com/post/2018/07/06/vue-vuex-jwt-authentication-tutorial-example
+ */
+
 import { fakeUpload } from './';
 
 export function fakeBackend() {
@@ -41,7 +45,6 @@ export function fakeBackend() {
                 if (url.endsWith('/photos/upload') && opts.method === 'POST') {
                   // console.log('works', opts.body.getAll('photos'));
                   resolve(fakeUpload(opts.body));
-
                   return;
                 }
 

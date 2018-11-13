@@ -1,11 +1,15 @@
+/*
+ * https://github.com/chybie/file-upload-vue/blob/master/src/file-upload.fake.service.js
+ */
+
 function fakeUpload(formData) {
     const photos = formData.getAll('photos');
     const promises = photos.map((x) => getImage(x)
-        .then(img => ({
+        .then((img) => ({
             id: img,
             originalName: x.name,
             fileName: x.name,
-            url: img
+            url: img,
         })));
     return Promise.all(promises);
 }
@@ -16,12 +20,12 @@ function getImage(file) {
         const img = document.createElement('img');
 
         fReader.onload = () => {
-            img.src = fReader.result;
+            (img as any).src = fReader.result;
             resolve(getBase64Image(img));
-        }
+        };
 
         fReader.readAsDataURL(file);
-    })
+    });
 }
 
 function getBase64Image(img) {
@@ -30,10 +34,9 @@ function getBase64Image(img) {
     canvas.height = img.height;
 
     const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
+    if (ctx) { ctx.drawImage(img, 0, 0); }
     const dataURL = img.src;
     return dataURL;
 }
 
-export { fakeUpload }
-
+export { fakeUpload };

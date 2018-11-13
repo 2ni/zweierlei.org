@@ -38,8 +38,8 @@
           </div>
         </l-popup>
       </l-marker>
-      <div v-if='isMapLoading' class="is-overlay is-size-2 has-text-weight-bold">
-        <p>Detecting your position...</p>
+      <div v-if='detectingPos' class="is-overlay has-text-weight-bold">
+        <p class="notification is-light">Detecting your position...</p>
       </div>
     </l-map>
   </div>
@@ -47,14 +47,16 @@
 
 <style>
 .is-overlay {
-  opacity: 0.8;
+  opacity: 0.9;
+  z-index: 999;
+  vertical-align: middle;
 }
 .is-overlay p {
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
+  top: 3px;
+  transform: translate(-50%);
+  -ms-transform: translate(-50%);
 }
 .mapIcons {
   text-align: center;
@@ -108,7 +110,7 @@ export default {
       currentZoom: 13,
       currentCenter: L.latLng(47.3769, 8.5417),
       showParagraph: false,
-      positionFound: false,
+      detectingPos: true,
       map: null,
 
       icons: {
@@ -178,19 +180,29 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.map = this.$refs.map.mapObject;
-      navigator.geolocation.getCurrentPosition(this.moveToCurrentPosition);
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          this.detectingPos = false;
+          this.showCurrentPosition(pos);
+          this.showStories(L.latLng(pos.coords.latitude, pos.coords.longitude));
+        },
+        (error) => {
+          this.detectingPos = false;
+          this.showStories(this.center);
+        },
+        { enableHighAccuray: true, maximumAge: 10000 },
+      );
     });
   },
   computed: {
-    isMapLoading() {
-      return !this.positionFound;
-    },
   },
   methods: {
     // https://stackoverflow.com/questions/49099987/use-marker-icon-with-only-awesome-fonts-no-surrounding-balloon
-    moveToCurrentPosition(pos) {
-      this.positionFound = true;
-      this.center = L.latLng(pos.coords.latitude, pos.coords.longitude);
+    showCurrentPosition(pos, moveMap = true) {
+      if (moveMap) {
+        this.center = L.latLng(pos.coords.latitude, pos.coords.longitude);
+      }
+
       const marker = L.marker([pos.coords.latitude, pos.coords.longitude], {
         icon: L.divIcon({
           html: '<span class="has-text-link"><i class="fas fa-crosshairs fa-lg"></i></span>',
@@ -206,20 +218,20 @@ export default {
       });
       this.map.addLayer(marker);
       this.map.addLayer(circle);
-
+    },
+    showStories(center) {
       const icons = ['coffee', 'running', 'utensils'];
       for (let i = 0; i < 100; i++) {
         this.markers.push({
           key: i,
           pos: {
-            lat: Math.random() * .1 + this.center.lat - .05,
-            lng: Math.random() * .1 + this.center.lng - .05},
+            lat: Math.random() * .1 + center.lat - .05,
+            lng: Math.random() * .1 + center.lng - .05},
           summary: 'Foo',
           tooltip: 'Description',
           icon: icons[Math.round(Math.random() * 2)],
         });
       }
-
     },
     zoomUpdate(zoom) {
       this.currentZoom = zoom;
