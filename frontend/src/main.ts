@@ -6,8 +6,8 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 
-import { fakeAuthentication } from './helpers';
-fakeAuthentication();
+import { fakeBackend } from './helpers';
+fakeBackend();
 
 import { messages, defaultLocale } from './locales/lang.json';
 

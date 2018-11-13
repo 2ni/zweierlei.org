@@ -132,8 +132,8 @@
 
 <script type="ts">
 // with thanks to https://github.com/chybie/file-upload-vue
-import { upload } from './file-upload.fake.service';
-import { wait } from './utils';
+import { upload } from '@/services/file-upload.service';
+// import { wait } from '@/helpers';
 
 const STATUS_INITIAL = 0;
 const STATUS_UPLOADING = 1;
@@ -192,7 +192,8 @@ export default {
       this.currentStatus = STATUS_UPLOADING;
       this.isDragging = false;
 
-      upload(data).then(wait(1000)).then((x) => {
+      // upload(data).then(wait(1000)).then((x) => {
+      upload(data).then((x) => {
         this.photos = this.photos.concat(x);
         this.currentStatus = STATUS_SUCCESS;
       })

@@ -1,4 +1,4 @@
-function upload(formData) {
+function fakeUpload(formData) {
     const photos = formData.getAll('photos');
     const promises = photos.map((x) => getImage(x)
         .then(img => ({
@@ -35,5 +35,5 @@ function getBase64Image(img) {
     return dataURL;
 }
 
-export { upload }
+export { fakeUpload }
 

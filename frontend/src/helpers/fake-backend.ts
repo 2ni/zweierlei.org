@@ -1,6 +1,9 @@
-export function fakeAuthentication() {
+import { fakeUpload } from './';
+
+export function fakeBackend() {
     const users = [{ id: 1, username: 'test@test.com', password: 'test', firstName: 'Test', lastName: 'User' }];
     const realFetch = window.fetch;
+    console.log('backend mocked!');
     window.fetch = (url: any, opts: any) => {
         return new Promise((resolve, reject) => {
             // wrap in timeout to simulate server api call
@@ -33,6 +36,13 @@ export function fakeAuthentication() {
                     }
 
                     return;
+                }
+
+                if (url.endsWith('/photos/upload') && opts.method === 'POST') {
+                  // console.log('works', opts.body.getAll('photos'));
+                  resolve(fakeUpload(opts.body));
+
+                  return;
                 }
 
                 // pass through any requests not handled above
