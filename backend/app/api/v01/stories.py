@@ -11,7 +11,7 @@ from datetime import datetime as dt
 
 class ApiStories(Resource):
     """
-    http -F GET :5000/api/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
+    http -F GET :5000/api/v0.1/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
     """
     endpoint_url = ["/stories", "/stories/<id>"]
 

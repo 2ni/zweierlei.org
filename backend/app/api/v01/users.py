@@ -10,8 +10,8 @@ from pprint import pprint
 
 class ApiUsers(Resource):
     """
-    http :5000/api/users
-    http -F :5000/api/users/
+    http :5000/api/v0.1/users
+    http -F :5000/v0.1/api/users/
     """
     endpoint_url = ["/users", "/users/<action>"]
 
