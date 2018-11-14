@@ -37,18 +37,8 @@ def register_converters(app):
     pass
 
 def register_blueprints(app):
-    from app.api.users import ApiUsers
-    bp = Blueprint("apiUsers", __name__)
-    CORS(bp)
-    api = Api(bp)
-    api.add_resource(ApiUsers, *ApiUsers.endpoint_url, endpoint="users")
-    app.register_blueprint(bp, url_prefix="/api")
-
-    from app.api.stories import ApiStories
-    bp = Blueprint("apiStories", __name__)
-    api = Api(bp)
-    api.add_resource(ApiStories, *ApiStories.endpoint_url, endpoint="stories")
-    app.register_blueprint(bp, url_prefix="/api")
+    from app.api.v01 import bp as apiV01Bp
+    app.register_blueprint(apiV01Bp, url_prefix="/api/v0.1")
 
     """
     apiTest = Blueprint("apiTest", __name__)
