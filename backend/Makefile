@@ -26,3 +26,6 @@ shell:
 # -b --buffer   output during passing test is discarded
 tests:
 	python tests.py -f
+
+populateDB:
+	cat redis.txt | redis-cli
