@@ -9,6 +9,11 @@ pyenv local zweierlei
 pip install -Ur requirements.txt
 ```
 
+### Resources / Todos
+- https://blog.angular-university.io/angular-jwt/
+- https://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/
+- https://codeburst.io/jwt-authorization-in-flask-c63c1acf4eeb
+
 ### Redis
 - https://medium.com/@stockholmux/from-sql-to-redis-chapter-1-145c82e4baa0
 
