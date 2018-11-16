@@ -24,11 +24,11 @@ for importer, modname, ispkg in pkgutil.walk_packages(path=__path__, prefix=__na
     fn = os.path.join(curDir, module+".py") # eg users.py
     with open(fn, "rb", 0) as file, \
         mmap.mmap(file.fileno(), 0, access=mmap.ACCESS_READ) as s:
-        m = re.search(br'class ([^(]+)', s)
-        if m:
-            classname = m.group(1).decode() # eg ApiUsers
-            print("**********found", classname)
+        matches = re.findall(br'class ([^(]+)', s)
+        for match in matches:
+            classname = match.decode() # eg ApiUsers
+            print("*** loading {module}/{classname}".format(module=module, classname=classname))
             classObject = __import__(modname, fromlist=[classname])
             obj = getattr(classObject, classname)()
-            api.add_resource(obj, *obj.endpoint_url, endpoint=module)
+            api.add_resource(obj, *obj.endpoint_url, endpoint="{module}/{classname}".format(module=module, classname=classname))
             continue
