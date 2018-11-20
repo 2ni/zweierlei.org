@@ -4,7 +4,7 @@ import os, sys, glob
 
 from flask import redirect, Flask, g, request, Blueprint
 from app import config
-from app.extensions import (db)
+from app.extensions import (db, jwt)
 
 from flask_restful import Api
 from flask_cors import CORS
@@ -29,6 +29,7 @@ def create_app(config=config.base_config):
 
 def register_extensions(app):
     db.init_app(app)
+    jwt.init_app(app)
 
 def register_errorhandlers(app):
     pass

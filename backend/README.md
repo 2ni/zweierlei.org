@@ -10,6 +10,10 @@ pip install -Ur requirements.txt
 ```
 
 ### Resources / Todos
+- create filter() function for dict
+- use private / public keys for jwt
+- global allowedFields for ie user
+
 - https://blog.angular-university.io/angular-jwt/
 - https://blog.mwaysolutions.com/2014/06/05/10-best-practices-for-better-restful-api/
 - https://codeburst.io/jwt-authorization-in-flask-c63c1acf4eeb
@@ -30,12 +34,12 @@ ZRANGEBYSCORE - get range of sorted set
 ```
 
 see redis.txt
-z:users:<id> (hash)
-z:allUsers   (unordered set)
-
-z:stories:<id> (hash)
-z:allStories   (unordered set)
-z:storiesCreatedIndex (ordered set)
+z:users:<id>           (hash)
+z:allUsers             (unordered set)
+z:usersByEmail:<email> (string)
+z:stories:<id>         (hash)
+z:allStories           (unordered set)
+z:storiesCreatedIndex  (ordered set)
 
 
 ### Usefull python stuff

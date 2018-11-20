@@ -14,3 +14,6 @@ class DecodedRedis(StrictRedis):
         return StrictRedis.from_url(url, db, **kwargs)
 
 db = FlaskRedis.from_custom_provider(DecodedRedis)
+
+from flask_jwt_extended import JWTManager
+jwt = JWTManager()

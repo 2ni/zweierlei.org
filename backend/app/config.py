@@ -6,6 +6,8 @@ class base_config(object):
 
     REDIS_URL = "redis://@localhost:6379/0"
 
+    JWT_SECRET_KEY = "superduperPassw0rd"
+
     DEBUG = False
 
 class dev_config(base_config):

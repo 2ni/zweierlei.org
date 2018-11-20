@@ -3,7 +3,8 @@ FLUSHALL
 
 // Users
 multi
-HMSET z:users:5834578e-351c-451a-94c6-500aa755f804 email "test@test.com" firstName "Test" lastName "User"
+HMSET z:users:5834578e-351c-451a-94c6-500aa755f804 email "test@test.com" password "$pbkdf2-sha256$29000$JURozbn33hvjfE.pFcK4Nw$sETD695WVP.EQuSKpLNlrxIgKtDzAMhr7pF.0Gr97nU" firstName "Test" lastName "User"
+SET z:usersByEmail:test@test.com 5834578e-351c-451a-94c6-500aa755f804
 SADD z:allUsers 5834578e-351c-451a-94c6-500aa755f804
 exec
 
