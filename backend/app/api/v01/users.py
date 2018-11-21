@@ -4,6 +4,7 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource, reqparse
 
 from app import db
+from app.utils.dict import filter_dict
 from pprint import pprint
 
 from passlib.hash import pbkdf2_sha256 as sha256
@@ -35,15 +36,19 @@ class ApiLogin(Resource):
     endpoint_url = ["/login", "/register"]
     allowedFields = ["email", "firstName", "lastName"]
 
-    def __init__(self):
-        self.reqparse = reqparse.RequestParser()
-        self.reqparse.add_argument("email", help="required element", required = True)
-        self.reqparse.add_argument("password", help="required element", required = True)
-        super(ApiLogin, self).__init__()
-
     def post(self):
+        data = request.json or {}
+
+        # mandatory fields
+        err = {}
+        for elm in ["email", "password"]:
+            if (elm not in data):
+                err[elm] = "required element"
+
+        if err:
+            return make_response(jsonify({"errors": err}), 400)
+
         endpointUsed = re.sub("^.*?([^/]*)$", r"\1", request.path)
-        data = self.reqparse.parse_args()
         uid = db.get("z:usersByEmail:{email}".format(email=data["email"]))
 
         # err = jsonify({"errors": "email/password mismatch"})
@@ -68,10 +73,11 @@ class ApiLogin(Resource):
             if uid:
                 return make_response(jsonify({"errors": "email already registered"}), 409)
 
-            dataFiltered = { k: data[k] for k in self.allowedFields if k in data }
+            dataFiltered = filter_dict(data, self.allowedFields)
             dataFiltered["password"] = sha256.hash(data["password"])
             uid = uuid.uuid4()
             pipe = db.pipeline()
+            # TODO check uid/email atomically as one email could potentially be appended to multiple uids
             pipe.hmset("z:users:{uid}".format(uid=uid), dataFiltered)
             pipe.sadd("z:allUsers", uid)
             pipe.set("z:usersByEmail:{email}".format(email=dataFiltered["email"]), uid)
@@ -83,11 +89,12 @@ class ApiLogin(Resource):
         refresh_token = create_refresh_token(identity = uid)
         user = db.hgetall("z:users:{uid}".format(uid=uid)) if user == None else user
         return jsonify(
-            **{ k: user[k] for k in self.allowedFields if k in user },
+            **filter_dict(user, self.allowedFields),
             **{
                 "message": "ok",
                 "access_token": access_token,
-                "refresh_token": refresh_token
+                "refresh_token": refresh_token,
+                "uid": uid
             }
         );
 
@@ -120,8 +127,8 @@ class ApiUsers(Resource):
             uidLookup = get_jwt_identity()
 
         user = db.hgetall("z:users:{uid}".format(uid=uidLookup))
-        userFiltered = { k: user[k] for k in self.allowedFields if k in user }
-        return jsonify(userFiltered)
+        userFiltered = filter_dict(user, self.allowedFields)
+        return jsonify({**userFiltered, **{"uid": uidLookup}})
 
         """
         http://flask.pocoo.org/snippets/71/

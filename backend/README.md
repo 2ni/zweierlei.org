@@ -10,7 +10,6 @@ pip install -Ur requirements.txt
 ```
 
 ### Resources / Todos
-- create filter() function for dict
 - use private / public keys for jwt
 - global allowedFields for ie user
 
