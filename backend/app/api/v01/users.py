@@ -4,7 +4,7 @@ from flask import jsonify, request, make_response
 from flask_restful import Resource, reqparse
 
 from app import db
-from app.utils.dict import filter_dict
+from app.utils.dict import (filter_dict, merge_dict)
 from pprint import pprint
 
 from passlib.hash import pbkdf2_sha256 as sha256
@@ -88,15 +88,15 @@ class ApiLogin(Resource):
         access_token = create_access_token(identity = uid)
         refresh_token = create_refresh_token(identity = uid)
         user = db.hgetall("z:users:{uid}".format(uid=uid)) if user == None else user
-        return jsonify(
-            **filter_dict(user, self.allowedFields),
-            **{
+        return jsonify(merge_dict(
+            filter_dict(user, self.allowedFields),
+            {
                 "message": "ok",
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "uid": uid
             }
-        );
+        ));
 
 
 class ApiLogout(Resource):
@@ -128,7 +128,7 @@ class ApiUsers(Resource):
 
         user = db.hgetall("z:users:{uid}".format(uid=uidLookup))
         userFiltered = filter_dict(user, self.allowedFields)
-        return jsonify({**userFiltered, **{"uid": uidLookup}})
+        return jsonify(merge_dict(userFiltered, {"uid": uidLookup}))
 
         """
         http://flask.pocoo.org/snippets/71/
