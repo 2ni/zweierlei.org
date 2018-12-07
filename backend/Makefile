@@ -24,8 +24,9 @@ shell:
 
 # -f --failfast stop test on first failure
 # -b --buffer   output during passing test is discarded
+# make tests test=Test.test_user_update to run a single test
 tests:
-	python tests.py -f
+	python tests.py -f $(test)
 
 populateDB:
 	cat redis.txt | redis-cli
