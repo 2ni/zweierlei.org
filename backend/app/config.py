@@ -23,3 +23,4 @@ class dev_config(base_config):
 
 class test_config(base_config):
     DEBUG = True
+    REDIS_URL = "redis://@localhost:6378/0"

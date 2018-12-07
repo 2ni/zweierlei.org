@@ -30,8 +30,10 @@ class ApiTest(Resource):
 
 class ApiUsers(Resource):
     """
-    http :5000/api/v0.1/users
-    http -F :5000/v0.1/api/users/ http -F GET :5000/api/v0.1/users/5834578e-351c-451a-94c6-500aa755f804 Authorization:'Bearer <jwt>'
+    http -F GET :5000/api/v0.1/users Authorization:"Bearer <jwt>"
+    http -F GET :5000/api/v0.1/users/5834578e-351c-451a-94c6-500aa755f804 Authorization:"Bearer <jwt>"
+    http -F POST :5000/api/v0.1/users Authorization:"Bearer <jwt>" email="foobar@zweierlei.org" firstname="Foo"
+
     """
     endpoint_url = ["/users", "/users/<uid>"]
     exposedFields = ["email", "firstname", "lastname"]
@@ -54,7 +56,7 @@ class ApiUsers(Resource):
 
         rawNewData = request.json or {}
         # only exposed data allowed to start, keep password from current data
-        dataToSave = filter_dict(rawNewData, self.exposedFields + ["password"])
+        dataToSave = filter_dict(rawNewData, self.exposedFields)
 
         # mandatory fields
         # TODO check if email not empty and is a potential email
@@ -62,32 +64,34 @@ class ApiUsers(Resource):
         if err:
             return make_response(jsonify(err), 400)
 
-        curData = self.get_user(uid)
+        curRawData = self.get_user(uid)
 
-        uid = curData.get("uid")
+        dataToSave["uid"] = curRawData.get("uid")
         # safety check, should never happen
-        if not uid:
-            return make_response(jsonify({"msg": "missing uid"}), 422)
+        if not dataToSave["uid"]:
+            return make_response(jsonify({"msg": "uid missing"}), 422)
 
-        # (new) password is given
+
+        # password handling: keep old one if none given
         newPassword = rawNewData.get("password")
         if newPassword:
             dataToSave["password"] = sha256.hash(newPassword)
-
-        newEmail = rawNewData.get("email")
-        curEmail = curData.get("email")
-        # new email means we have to update some more stuff
-        if newEmail != curEmail:
-            with db.pipeline() as pipe:
-                pipe.multi()
-                pipe.hmset("z:users:{uid}".format(uid=uid), dataToSave)
-                pipe.set("z:usersByEmail:{email}".format(email=newEmail), uid)
-                pipe.delete("z:usersByEmail:{email}".format(email=curEmail))
-                pipe.execute()
         else:
-            db.hmset("z:users:{uid}".format(uid=uid), dataToSave)
+            dataToSave["password"] = curRawData.get("password")
 
-        return jsonify(merge_dict(filter_dict(dataToSave, self.exposedFields), {"uid": uid, "msg": "ok"}))
+
+        # TODO merge with duplicate code in auth.py
+        args = []
+        for k, v in dataToSave.items():
+            args.append(k)
+            args.append(v)
+
+        ret = db.replaceOrInsertUser(args=args).lower()
+
+        if ret == "ok":
+            return jsonify(merge_dict(filter_dict(dataToSave, self.exposedFields + ["uid"]), {"msg": "ok"}))
+        else:
+            return make_response(jsonify({"msg": "email already registered"}), 409)
 
     def get_user(self, uid):
         """

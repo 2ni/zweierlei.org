@@ -45,30 +45,24 @@ class ApiLogin(Resource):
             if user and sha256.verify(data["password"], user["password"]):
                 return self.login(uid, user)
             else:
-                return self.response("password")
+                return self.response("wrong creds")
 
         # register
         else:
+            # TODO merge with duplicate code in users.py
             dataFiltered = filter_dict(data, self.exposedFields)
             dataFiltered["password"] = sha256.hash(data["password"])
-            uid = uuid.uuid4()
-            with db.pipeline() as pipe:
-                # ensure email does not yet exist
-                emailKey = "z:usersByEmail:{email}".format(email=dataFiltered["email"])
-                try:
-                    pipe.watch(emailKey)
-                    if pipe.exists(emailKey):
-                        raise WatchError
-                    else:
-                        pipe.multi()
-                        pipe.hmset("z:users:{uid}".format(uid=uid), dataFiltered)
-                        pipe.sadd("z:allUsers", uid)
-                        pipe.set(emailKey, uid)
-                        pipe.execute()
-                except WatchError:
-                    pipe.reset()
-                    return self.response("exists")
-            return self.login(uid)
+            dataFiltered["uid"] = uuid.uuid4()
+            args = []
+            for k, v in dataFiltered.items():
+                args.append(k)
+                args.append(v)
+
+            ret = db.replaceOrInsertUser(args=args).lower()
+            if ret == "ok":
+                return self.login(dataFiltered["uid"])
+            else:
+                return self.response(ret)
 
     def login(self, uid, user=None):
         access_token = create_access_token(identity = uid)
@@ -94,10 +88,12 @@ class ApiLogin(Resource):
 
     def response(self, type):
         respErrs = {
-            "password": make_response(jsonify({"msg": "bad email/password"}), 401),
-            "exists": make_response(jsonify({"msg": "email already registered"}), 409)
+            "wrong creds": make_response(jsonify({"msg": "bad email/password"}), 401),
+            "email exists": make_response(jsonify({"msg": "email already registered"}), 409),
+            "uid missing": make_response(jsonify({"msg": "uid is missing"}), 422),
+            "generic": make_response(jsonify({"msg": "an error occured"}), 400)
         }
-        return respErrs[type]
+        return respErrs[type] if type in respErrs else respErrs["generic"]
 
 class ApiLogoutAccess(Resource):
     """
@@ -145,4 +141,4 @@ class ApiRefresh(Resource):
         access_jti = get_jti(encoded_token=access_token)
         db.set("z:tokens:{jti}".format(jti=access_jti), "false", current_app.config.get("ACCESS_EXPIRES") * 1.2)
 
-        return jsonify({"access_token": access_token})
+        return jsonify({"msg": "ok", "access_token": access_token})
