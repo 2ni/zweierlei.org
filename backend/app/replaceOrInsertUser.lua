@@ -38,7 +38,7 @@ local emailRegistered = redis.call("SISMEMBER", KEYallEmails, argv["email"])
 local currentEmail = redis.call("HMGET", KEYusers, "email")[1] -- oldemail
 
 if currentEmail ~= argv["email"] and emailRegistered == 1 then
-    return "email already registered"
+    return "email exists"
 else
     -- for simplicity always remove (and potentially re-add below)
     if currentEmail then

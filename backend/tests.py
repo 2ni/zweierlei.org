@@ -13,6 +13,7 @@ class Test(unittest.TestCase):
     userdata = {"email": "test@zweierlei.org", "password": "test", "firstname": "Test"}
     userdata2 = {"email": "test2@zweierlei.org", "password": "test", "firstname": "Test2"}
     newuserdata = { "firstname": "John", "email": "newemail@zweierlei.org", "password": "12345", "anything": "shouldnotwork" }
+    overwritedata = { "firstname": "Foo", "email": "foobar@zweierlei.org", "password": "54321" }
     redis_process = None
     redis_port = None
 
@@ -70,12 +71,14 @@ class Test(unittest.TestCase):
         return self.call(method, url, data, headers = {"Authorization": "Bearer " + token})
 
 
-    def login(self, filter=[]):
-        resp, data = self.call("post", self.api("login"), self.userdata)
-        return filter_dict(data, filter) if filter else data
+    def login(self, credentials=None):
+        if not credentials:
+            credentials = self.userdata
+        resp, data = self.call("post", self.api("login"), credentials)
+        return data
 
     def register(self, data):
-        resp, newuser = self.call("post", self.api("register"), userdata)
+        resp, newuser = self.call("post", self.api("register"), data)
         return newuser
 
 
@@ -104,7 +107,7 @@ class Test(unittest.TestCase):
         # print(resp.status_code, refresh)
 
     def test_user_getdata(self):
-        tokens = self.login(["access_token", "refresh_token"])
+        tokens = self.login()
 
         resp, data = self.callWithToken("get", self.api("users"), tokens["access_token"])
         self.assertEqual(data["msg"], "ok")
@@ -128,7 +131,6 @@ class Test(unittest.TestCase):
         self.assertEqual(newuser["msg"], "ok")
         self.assertEqual(newuser["email"], self.newuserdata["email"])
         assert "password" not in data.keys()
-        print(newuser)
 
         # already registered
         resp, data = self.call("post", self.api("register"), self.newuserdata)
@@ -154,12 +156,19 @@ class Test(unittest.TestCase):
 
         current = self.login()
         # overwrite data
-        resp, data = self.callWithToken("post", self.api("users"), current["access_token"], self.newuserdata)
+        resp, data = self.callWithToken("post", self.api("users"), current["access_token"], self.overwritedata)
         self.assertEqual(data["msg"], "ok")
-        self.assertEqual(data["email"], self.newuserdata["email"])
+        self.assertEqual(data["email"], self.overwritedata["email"])
+        self.assertEqual(data["firstname"], self.overwritedata["firstname"])
         self.assertEqual(data["uid"], current["uid"])
-        assert "anything" not in data.keys()
         assert "password" not in data.keys()
+
+        # ensure we can login with new creds
+        newdata = self.login(self.overwritedata)
+        assert "access_token" in newdata.keys()
+        assert "refresh_token" in newdata.keys()
+        self.assertEqual(newdata["uid"], data["uid"])
+        self.assertEqual(newdata["email"], self.overwritedata["email"])
 
         # overwrite existing email
         resp, data = self.callWithToken("post", self.api("users"), current["access_token"], {"email": self.userdata2["email"]})
