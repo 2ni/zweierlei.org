@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from flask import jsonify, request, make_response, current_app
-from flask_restful import Resource, reqparse
+from flask_restful import reqparse
 
 from app import db
 from app.utils.dict import (filter_dict, merge_dict, check_mandatory_fields)
+from app.api.zweierleiresource import ZweierleiResource
 from pprint import pprint
 
 from redis.exceptions import WatchError
@@ -16,7 +17,7 @@ import re, uuid
 
 # from app.decorators import auth
 
-class ApiLogin(Resource):
+class ApiLogin(ZweierleiResource):
     """
     submit creds to backend.
     http -F POST :5000/api/v0.1/login email=test@test.com password=test
@@ -30,9 +31,9 @@ class ApiLogin(Resource):
         data = request.json or {}
 
         # mandatory fields
-        err = check_mandatory_fields(data, ["email", "password"])
-        if err:
-            return make_response(jsonify(err), 400)
+        errs = check_mandatory_fields(data, ["email", "password"])
+        if errs:
+            return make_response(jsonify(errs), 422)
 
         endpointUsed = re.sub("^.*?([^/]*)$", r"\1", request.path)
 
@@ -86,16 +87,7 @@ class ApiLogin(Resource):
             }
         ));
 
-    def response(self, type):
-        respErrs = {
-            "wrong creds": make_response(jsonify({"msg": "bad email/password"}), 401),
-            "email exists": make_response(jsonify({"msg": "email already registered"}), 409),
-            "uid missing": make_response(jsonify({"msg": "uid is missing"}), 422),
-            "generic": make_response(jsonify({"msg": "an error occured"}), 400)
-        }
-        return respErrs[type] if type in respErrs else respErrs["generic"]
-
-class ApiLogoutAccess(Resource):
+class ApiLogoutAccess(ZweierleiResource):
     """
     https://github.com/vimalloc/flask-jwt-extended/blob/master/examples/redis_blacklist.py
 
@@ -110,7 +102,7 @@ class ApiLogoutAccess(Resource):
         db.set("z:tokens:{jti}".format(jti=jti), "true", current_app.config.get("ACCESS_EXPIRES") * 1.2)
         return jsonify({"msg": "access token revoked"})
 
-class ApiLogoutRefresh(Resource):
+class ApiLogoutRefresh(ZweierleiResource):
     """
     https://github.com/vimalloc/flask-jwt-extended/blob/master/examples/redis_blacklist.py
 
@@ -126,7 +118,7 @@ class ApiLogoutRefresh(Resource):
         return jsonify({"msg": "refresh token revoked"})
 
 
-class ApiRefresh(Resource):
+class ApiRefresh(ZweierleiResource):
     """
     endpoint to refresh access token with the refresh token
 

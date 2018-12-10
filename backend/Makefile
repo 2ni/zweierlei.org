@@ -10,7 +10,7 @@ ifeq (tests,$(firstword $(MAKECMDGOALS)))
 endif
 
 # -U upgrade
-init:
+install:
 	pip install -Ur requirements.txt
 
 clean:

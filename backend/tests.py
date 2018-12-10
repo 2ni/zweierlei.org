@@ -129,7 +129,7 @@ class Test(unittest.TestCase):
     def test_user_register(self):
         # mandatory fields
         resp, data = self.call("post", self.api("register"), filter_dict(self.newuserdata, "email"))
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 422)
         self.assertEqual(data["msg"]["password"], "required element")
 
         # register newuser

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from flask import jsonify, request, make_response
-from flask_restful import Resource, reqparse
+from flask_restful import reqparse
 
 from app import db
 from app.utils.dict import (filter_dict, merge_dict, exclude_dict, check_mandatory_fields)
+from app.api.zweierleiresource import ZweierleiResource
 from pprint import pprint
 
 from redis.exceptions import WatchError
@@ -16,7 +17,7 @@ import re
 
 # from app.decorators import auth
 
-class ApiTest(Resource):
+class ApiTest(ZweierleiResource):
     """
     Playground api
     """
@@ -28,7 +29,7 @@ class ApiTest(Resource):
         resp.status_code = 201
         return resp
 
-class ApiUsers(Resource):
+class ApiUsers(ZweierleiResource):
     """
     http -F GET :5000/api/v0.1/users Authorization:"Bearer <jwt>"
     http -F GET :5000/api/v0.1/users/5834578e-351c-451a-94c6-500aa755f804 Authorization:"Bearer <jwt>"
@@ -44,7 +45,7 @@ class ApiUsers(Resource):
         # method = getattr(self, uid, None)
 
         if uid and not self.is_allowed(uid):
-            return make_response(jsonify({"msg": "not allowed"}), 403)
+            return self.response("not allowed")
 
         rawData = self.get_userdata(uid)
         filteredData = filter_dict(rawData, self.exposedFields)
@@ -68,7 +69,7 @@ class ApiUsers(Resource):
             return make_response(jsonify(err), 400)
 
         if uid and not self.is_allowed(uid):
-            return make_response(jsonify({"msg": "not allowed"}), 403)
+            return self.response("not allowed")
 
 
         curRawData = self.get_userdata(uid)
@@ -76,7 +77,7 @@ class ApiUsers(Resource):
         dataToSave["uid"] = curRawData.get("uid")
         # safety check, should never happen
         if not dataToSave["uid"]:
-            return make_response(jsonify({"msg": "uid missing"}), 422)
+            self.response("uid missing")
 
 
         # password handling: keep old one if none given
@@ -98,7 +99,7 @@ class ApiUsers(Resource):
         if ret == "ok":
             return jsonify(merge_dict(filter_dict(dataToSave, self.exposedFields + ["uid"]), {"msg": "ok"}))
         else:
-            return make_response(jsonify({"msg": "email already registered"}), 409)
+            return self.response("email exists")
 
     def is_allowed(self, uid):
         isAdmin = False
