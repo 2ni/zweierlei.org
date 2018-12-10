@@ -12,7 +12,7 @@ from redis.exceptions import WatchError
 from passlib.hash import pbkdf2_sha256 as sha256
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
 
-import re, uuid
+import re
 
 # from app.decorators import auth
 
@@ -43,7 +43,10 @@ class ApiUsers(Resource):
     def get(self, uid=None):
         # method = getattr(self, uid, None)
 
-        rawData = self.get_user(uid)
+        if uid and not self.is_allowed(uid):
+            return make_response(jsonify({"msg": "not allowed"}), 403)
+
+        rawData = self.get_userdata(uid)
         filteredData = filter_dict(rawData, self.exposedFields)
         return jsonify(merge_dict(filteredData, {"uid": rawData["uid"], "msg": "ok"}))
 
@@ -64,7 +67,11 @@ class ApiUsers(Resource):
         if err:
             return make_response(jsonify(err), 400)
 
-        curRawData = self.get_user(uid)
+        if uid and not self.is_allowed(uid):
+            return make_response(jsonify({"msg": "not allowed"}), 403)
+
+
+        curRawData = self.get_userdata(uid)
 
         dataToSave["uid"] = curRawData.get("uid")
         # safety check, should never happen
@@ -93,18 +100,23 @@ class ApiUsers(Resource):
         else:
             return make_response(jsonify({"msg": "email already registered"}), 409)
 
-    def get_user(self, uid):
+    def is_allowed(self, uid):
+        isAdmin = False
+        if isAdmin or uid == get_jwt_identity():
+            return True
+        else:
+            return False
+
+    def get_userdata(self, uid):
         """
         get all user data from <uid>
         populates also uid in data even not stored in db
         """
-        isAdmin = False
-        if (uid and isAdmin):
-            uidLookup = uid
-        else:
-            uidLookup = get_jwt_identity()
 
-        return merge_dict(db.hgetall("z:users:{uid}".format(uid=uidLookup)), {"uid": uidLookup})
+        if not uid:
+            uid = get_jwt_identity()
+
+        return merge_dict(db.hgetall("z:users:{uid}".format(uid=uid)), {"uid": uid})
 
 
     # @auth()

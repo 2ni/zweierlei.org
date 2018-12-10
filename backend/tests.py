@@ -120,6 +120,12 @@ class Test(unittest.TestCase):
         assert "email" not in data.keys()
         self.assertEqual(data["msg"], "Only access tokens are allowed")
 
+    def test_user_getforeigndata(self):
+        tokens = self.login()
+        resp, data = self.callWithToken("get", self.api("users")+"/111", tokens["access_token"])
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(data["msg"], "not allowed")
+
     def test_user_register(self):
         # mandatory fields
         resp, data = self.call("post", self.api("register"), filter_dict(self.newuserdata, "email"))
