@@ -1,0 +1,6 @@
+*.txt filter=nocommit
+*.js filter=nocommit
+*.ts filter=nocommit
+*.css filter=nocommit
+*.vue filter=nocommit
+*.py filter=nocommit
