@@ -22,14 +22,17 @@ pip install -Ur requirements.txt
 
 Common commands for redis-cli
 ```
-FLUSHALL      - all
-FLUSHDB       - current db
-SMEMBERS      - return all members of a set
-HMSET         - insert hash
-HGETALL	      - get all key/values from a hash
-SADD          - add to unordered set
-ZADD	      - add to sorted set
-ZRANGEBYSCORE - get range of sorted set
+FLUSHALL        - all
+FLUSHDB         - current db
+SMEMBERS        - return all members of a set
+HMSET           - insert hash
+HGETALL	        - get all key/values from a hash
+SADD            - add to unordered set
+ZADD	        - add to sorted set
+ZRANGEBYSCORE   - get range of sorted set
+ZRANGE key 0 -1 - get all members of sorted set
+RPUSH key value - insert to sorted list
+LRANGE key 0 -1 - get all members of sorted list
 ```
 
 see redis.txt

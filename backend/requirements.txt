@@ -6,3 +6,4 @@ flask-redis
 flask-jwt-extended[asymmetric_crypto]
 passlib
 exifread
+python-dateutil

@@ -31,8 +31,10 @@ def register_extensions(app):
     db.init_app(app)
 
     # import redis lua scripts
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "replaceOrInsertUser.lua"), "r") as lua:
-        db.replaceOrInsertUser = db.register_script(lua.read())
+    scripts = ["replaceOrInsertUser", "appendMediasToStory"]
+    for script in scripts:
+        with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), script+".lua"), "r") as lua:
+            setattr(db, script, db.register_script(lua.read()))
 
     jwt.init_app(app)
 

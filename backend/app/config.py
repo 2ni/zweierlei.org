@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from datetime import timedelta
 
 class base_config(object):
@@ -15,6 +16,10 @@ class base_config(object):
     JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
     JWT_BLACKLIST_ENABLED = True
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
+
+    # file uploads
+    UPLOAD_FOLDER = os.path.join("static", "uploads")
+    UPLOAD_DEPTH = 3
 
     DEBUG = False
 

@@ -77,7 +77,7 @@ class ApiUsers(ZweierleiResource):
         dataToSave["uid"] = curRawData.get("uid")
         # safety check, should never happen
         if not dataToSave["uid"]:
-            self.response("uid missing")
+            self.response("missing", "uid")
 
 
         # password handling: keep old one if none given
