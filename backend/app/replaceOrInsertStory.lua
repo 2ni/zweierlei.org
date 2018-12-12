@@ -53,7 +53,7 @@ for k,v in pairs({"title", "description"}) do table.insert(argvPacked, v) table.
 redis.call("HMSET", KEYstory, unpack(argvPacked))
 
 -- save created if it not exists
-if argv["created"] and redis.call("ZSCORE", KEYcreated, argv["id"]) == nil then
+if argv["created"] and redis.call("ZSCORE", KEYcreated, argv["id"]) == false then
     redis.call("ZADD", KEYcreated, argv["created"], argv["id"])
 end
 

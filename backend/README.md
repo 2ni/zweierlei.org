@@ -44,8 +44,14 @@ z:stories:<id>         (hash)
 z:allStories           (unordered set)
 z:storiesCreatedIndex  (ordered set)
 
+### Useful terminal stuff
+```
+convert -size 1x1 xc:white test.jpg                                  # create jpg
+exiftool -GPSLatitude="68.154715" -GPSLongitude="14.211241" -GPSLatitudeRef="North" -GPSLongitudeRef="East" test.jpg
+exiftool -GPSDateTime="2018-20-10 07:15:30Z" -GPSDateStamp="2018:10:20" -GPSTimeStamp="07:15:30" test.jpg
+```
 
-### Usefull python stuff
+### Useful python stuff
 ```
 > # create uuid
 > import uuid

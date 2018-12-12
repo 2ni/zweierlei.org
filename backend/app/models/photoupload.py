@@ -4,6 +4,8 @@ import PIL.Image, uuid, os
 from PIL.ExifTags import TAGS
 
 import dateutil.parser as dp
+from datetime import datetime as dt
+import pytz
 
 from app.utils.dict import filter_dict
 from app.utils.dir import uuid2dir
@@ -58,7 +60,7 @@ class Photoupload:
         except (KeyError, AttributeError):
             return None, None
 
-    def get_created(self):
+    def get_created_human(self):
         """
         return datetime when photo was shot from GPS
         UTC time
@@ -74,13 +76,14 @@ class Photoupload:
         except (KeyError, AttributeError):
             return None
 
-    def get_timestamp(self):
+    def get_created(self):
         """
         return seconds since epoch when photo was shot from GPS
         """
-        ts = self.get_created()
+        ts = self.get_created_human()
         if ts:
-            return dp.parse(ts).strftime("%s")
+            epoch = dt(1970, 1, 1, 0, 0, 0, tzinfo=pytz.UTC)
+            return str(round((dp.parse(ts) - epoch).total_seconds()))
         else:
             return None
 
@@ -93,11 +96,11 @@ class Photoupload:
 
         lat, lon = self.get_latlon()
         if (lat and lon):
-            data["lat"] = lat
-            data["lon"] = lon
+            data["lat"] = round(lat, 4)
+            data["lon"] = round(lon, 4)
             # data["geometry"] = {"type": "Point", "coordinates": [round(elem, 4) for elem in [lat, lon]]}
 
-        for tag in ["created", "timestamp"]:
+        for tag in ["created", "created_human"]:
             tag_data = getattr(self, "get_"+tag)()
             if tag_data:
                 data[tag] = tag_data
