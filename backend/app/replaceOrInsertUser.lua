@@ -18,13 +18,20 @@ for i, v in pairs(ARGV) do
     end
 end
 
-if not argv["uid"] then
-    return "uid missing"
+-- check mandatory fields
+local err_elms = ""
+local err_count = 0
+for i, key in pairs({"uid", "email"}) do
+    if not argv[key] or argv[key] == "None" then
+        err_elms = err_elms .. key .. ","
+        err_count = err_count+1
+    end
 end
 
-if not argv["email"] then
-    return "email exists"
+if err_count > 0 then
+    return "required element:" .. err_elms:sub(1, -2)
 end
+
 
 local uid = argv["uid"]
 argv["uid"] = nil
@@ -38,7 +45,7 @@ local emailRegistered = redis.call("SISMEMBER", KEYallEmails, argv["email"])
 local currentEmail = redis.call("HMGET", KEYusers, "email")[1] -- oldemail
 
 if currentEmail ~= argv["email"] and emailRegistered == 1 then
-    return "email exists"
+    return "exists:email"
 else
     -- for simplicity always remove (and potentially re-add below)
     if currentEmail then

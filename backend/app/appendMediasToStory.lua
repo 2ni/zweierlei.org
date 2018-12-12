@@ -31,10 +31,16 @@ local KEYstory = "z:stories:" .. argv["id"]
 local KEYstoryByUser = "z:storiesByUser:" .. argv["uid"]
 local KEYmediasByStory = "mediasByStory:" .. argv["id"]
 local KEYstoriesPosition = "z:stories:position"
+local KEYcreated = "z:stories:index:created"
 
 -- check if story exists
 if redis.call("EXISTS", KEYstory) == 0 then
     return "missing story"
+end
+
+-- check if user exists
+if redis.call("EXISTS", KEYuser) == 0 then
+    return "uid not found"
 end
 
 -- check if user allowed
@@ -44,29 +50,36 @@ end
 
 -- append medias if not exist
 local newmedias = {}
+local newmedias_count = 0
 local c = redis.call("LRANGE", KEYmediasByStory, 0, -1)
 local currentmedias = {}
 for _,id in pairs(c) do currentmedias[id] = 1 end
 
 local pos = {}
+local timestamp = nil
 local data =  cjson.decode(argv["medias"])
 print("inserting into " .. KEYmediasByStory)
 for i,d in pairs(data) do
     if d["id"] ~= nil and currentmedias[d["id"]] ~= 1 then
         print(d["id"])
         table.insert(newmedias, d["id"])
+        newmedias_count = newmedias_count+1
+        -- get 1st lat/lon/timestamp from uploads
         if d["lat"] and d["lon"] and pos["lat"] == nil then
             pos["lat"] = d["lat"]
             pos["lon"] = d["lon"]
+            timestamp = d["timestamp"]
         end
+
     end
 end
 
-if table.getn(newmedias) > 0 then
+if newmedias_count > 0 then
     redis.call("RPUSH", KEYmediasByStory, unpack(newmedias))
-    -- update story if no geo info
+    -- update lat/lon/timestamp of story if no geo info
     if pos["lat"] and redis.call("ZSCORE", KEYstoriesPosition, argv["id"]) == false then
         redis.call("GEOADD", KEYstoriesPosition, pos["lon"], pos["lat"], argv["id"])
+        redis.call("ZADD", KEYcreated, argv["created"], argv["id"])
         print("updated pos of story to " .. pos["lat"] .. "," .. pos["lon"])
     end
 end
