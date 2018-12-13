@@ -23,17 +23,12 @@ class ApiStories(ZweierleiResource):
     exposed_fields = ["title", "description"]
 
     def get(self, id=None):
-        # TODO get medias for a story
+        # TODO get medias for a story -> dedicated api
         # TODO return lat, lon on stories and latest
-        # TODO avoid duplicate code
         if id:
-            story = db.hgetall("z:stories:{id}".format(id=id))
+            created = str(round(db.zscore("z:stories:index:created", id)))
+            story = self._get_story(id, created)
             if story:
-                created = str(round(db.zscore("z:stories:index:created", id)))
-                story["id"] = id
-                story["created"] = created
-                story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
-                story["contenturl"] = self._get_content_url(id)
                 return jsonify(story)
             else:
                 return self.response("not found")
@@ -43,15 +38,14 @@ class ApiStories(ZweierleiResource):
             latestIds = db.zrevrangebyscore("z:stories:index:created", "inf", 0, 0, 3, True)
             stories = []
             for (id, created) in latestIds:
-                story = db.hgetall("z:stories:{id}".format(id=id))
-                story["id"] = id
-                story["created"] = str(round(created))
-                story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
-                story["contenturl"] = self._get_content_url(id)
+                story = self._get_story(id, created)
+                if story:
+                    stories.append(story)
 
-                stories.append(story)
-
-            return jsonify(stories)
+            if stories:
+                return jsonify(stories)
+            else:
+                return self.resonse("not found")
 
     @jwt_required_consume_attach
     def put(self, id=None):
@@ -160,3 +154,14 @@ class ApiStories(ZweierleiResource):
             id=id
         )
 
+    def _get_story(self, id, created):
+        story = db.hgetall("z:stories:{id}".format(id=id))
+        if not story:
+            return None
+
+        story["id"] = id
+        story["created"] = created
+        story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
+        story["contenturl"] = self._get_content_url(id)
+
+        return story
