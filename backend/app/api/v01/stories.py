@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import uuid, json, os
+import uuid, json, os, re
 
 from flask import jsonify, request, url_for, current_app
 from flask_jwt_extended import (get_jwt_identity, jwt_required)
@@ -17,7 +17,7 @@ from app.decorators import jwt_required_consume_attach
 
 class ApiStories(ZweierleiResource):
     """
-    http -F GET :5000/api/v0.1/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
+    http -F GET :5000/api/v01/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
     """
     endpoint_url = ["/stories", "/stories/<id>"]
     exposed_fields = ["title", "description"]
@@ -58,7 +58,7 @@ class ApiStories(ZweierleiResource):
         Add media to stories
         see https://stackoverflow.com/questions/28982974/flask-restful-upload-image
 
-        http -f -F PUT :5000/api/v0.1/stories/a96970f1-fbaa-439c-892a-cec49ea6376d Authorization:"Bearer <jwt>" medias@<file> medias@<file>...
+        http -f -F PUT :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d Authorization:"Bearer <jwt>" medias@<file> medias@<file>...
         """
 
         media_uploads = request.files.getlist("medias")
@@ -113,7 +113,7 @@ class ApiStories(ZweierleiResource):
         Create or Update  entry
         Entry will be replaced, all values must be given
 
-        http -F POST :5000/api/v0.1/stories/a96970f1-fbaa-439c-892a-cec49ea6376d Authorization:"Bearer <jwt>"  title=...
+        http -F POST :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d Authorization:"Bearer <jwt>"  title=...
         """
         rawData = request.json or {}
         dataToSave = filter_dict(rawData, self.exposed_fields)
@@ -126,10 +126,16 @@ class ApiStories(ZweierleiResource):
         else:
             dataToSave["id"] = id
 
+
         ret = db.replaceOrInsertStory(args=dict2list(dataToSave)).lower()
         del dataToSave["uid"] # do not return user uid
         if ret == "ok":
-            return jsonify(merge_dict(dataToSave, {"msg": "ok"}))
+            curdir = os.path.dirname(os.path.realpath(__file__))
+            apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
+            return jsonify(merge_dict(dataToSave, {
+                "msg": "ok",
+                "contenturl": "{apiurl}/stories/{id}".format(apiurl=apiurl, id=dataToSave["id"])
+            }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"
             return self.response(*ret.split(":"))
@@ -137,6 +143,6 @@ class ApiStories(ZweierleiResource):
     @jwt_required
     def delete(self, id):
         """
-        http -F -f DELETE :5000/api/v0.1/stories/a96970f1-fbaa-439c-892a-cec49ea6376d
+        http -F -f DELETE :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d
         """
         return self.response("not implemented")

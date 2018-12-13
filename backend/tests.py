@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
         if type(endpoint).__name__ == list.__name__:
             endpoint = "/".join(endpoint)
 
-        return "/api/v0.1/" + endpoint
+        return "/api/v01/" + endpoint
 
 
 ##### Tests start here #####
@@ -213,7 +213,8 @@ class Test(unittest.TestCase):
         # create story
         resp, data = self.callWithToken("post", self.api("stories"), user["access_token"], {"title": "Fancy thing", "description": "hahaha"})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human"), [])
+        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,contenturl"), [])
+        self.assertEqual(self.api(["stories", data["id"]]), data["contenturl"])
 
         storyapiurl = self.api(["stories", data["id"]])
 
@@ -248,12 +249,16 @@ class Test(unittest.TestCase):
         # check if files correctly saved and correct data
         for i, media in enumerate(data["medias"]):
             self.assertEqual(diff_dict(media, list(files.values())[i]), [])
-            self.assertTrue(os.path.isfile(os.path.join(self.dir, media["url"][1:])))
+            self.assertTrue(os.path.isfile(os.path.join(self.dir, media["url"])))
 
         # after 1st media upload story should have created, lat, lon from that media
         resp, data = self.call("get", storyapiurl)
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")
+
+        #close files
+        for fn in fns:
+            fn.close()
 
     def test_story_wrong_media(self):
         user = self.login()

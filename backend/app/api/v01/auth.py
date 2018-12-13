@@ -20,7 +20,7 @@ import re, uuid
 class ApiLogin(ZweierleiResource):
     """
     submit creds to backend.
-    http -F POST :5000/api/v0.1/login email=test@test.com password=test
+    http -F POST :5000/api/v01/login email=test@test.com password=test
 
     @return success/failure, session token, profile info
     """
@@ -29,7 +29,7 @@ class ApiLogin(ZweierleiResource):
 
     def post(self):
         """
-        http -F POST :5000/api/v0.1/login email=test@zweierlei.org xpassword="test
+        http -F POST :5000/api/v01/login email=test@zweierlei.org xpassword="test
         """
         data = request.json or {}
 
@@ -120,7 +120,7 @@ class ApiRefresh(ZweierleiResource):
     """
     endpoint to refresh access token with the refresh token
 
-    http -F GET :5000/api/v0.1/refresh Authorization:"Bearer <refresh_token>"
+    http -F GET :5000/api/v01/refresh Authorization:"Bearer <refresh_token>"
     """
     endpoint_url = ["/refresh"]
 
