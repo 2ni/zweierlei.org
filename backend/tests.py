@@ -94,7 +94,7 @@ class Test(unittest.TestCase):
 
     @staticmethod
     def api(endpoint):
-        if type(endpoint).__name__ == list.__name__:
+        if isinstance(endpoint, list):
             endpoint = "/".join(endpoint)
 
         return "/api/v01/" + endpoint
@@ -198,13 +198,23 @@ class Test(unittest.TestCase):
         resp, data = self.call("get", self.api(["stories", self.storyid]))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
-        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,contenturl"), [])
+        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,contenturl,lat,lon"), [])
 
         resp, data = self.call("get", self.api(["stories", str(uuid.uuid4())]))
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(data["msg"], "not found")
 
-        #TODO get latest stories
+    def test_story_getlastest(self):
+        resp, stories = self.call("get", self.api("stories"))
+        lastcreated = None
+        assert len(stories) > 0
+        assert len(stories) <= 3
+        for story in stories:
+            self.assertEqual(diff_dict(story, "created,created_human,description,title,id,contenturl,lat,lon"), [])
+            if lastcreated:
+                assert lastcreated >= story["created"]
+
+            lastcreated = story["created"]
 
     def test_story_create(self):
         """

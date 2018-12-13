@@ -24,6 +24,8 @@ class ApiStories(ZweierleiResource):
 
     def get(self, id=None):
         # TODO get medias for a story
+        # TODO return lat, lon on stories and latest
+        # TODO avoid duplicate code
         if id:
             story = db.hgetall("z:stories:{id}".format(id=id))
             if story:
@@ -43,7 +45,7 @@ class ApiStories(ZweierleiResource):
             for (id, created) in latestIds:
                 story = db.hgetall("z:stories:{id}".format(id=id))
                 story["id"] = id
-                story["created"] = created
+                story["created"] = str(round(created))
                 story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
                 story["contenturl"] = self._get_content_url(id)
 
