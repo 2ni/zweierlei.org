@@ -198,7 +198,7 @@ class Test(unittest.TestCase):
         resp, data = self.call("get", self.api(["stories", self.storyid]))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
-        self.assertEqual(diff_dict(data, "url,created,created_human,description,title,id"), [])
+        self.assertEqual(diff_dict(data, "url,created,created_human,description,title,id,contenturl"), [])
 
         resp, data = self.call("get", self.api(["stories", str(uuid.uuid4())]))
         self.assertEqual(resp.status_code, 404)

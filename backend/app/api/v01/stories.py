@@ -33,6 +33,7 @@ class ApiStories(ZweierleiResource):
                 story["url"] = "tbd" # TODO
                 story["created"] = created
                 story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
+                story["contenturl"] = self._get_content_url(id)
                 return jsonify(story)
             else:
                 return self.response("not found")
@@ -47,6 +48,7 @@ class ApiStories(ZweierleiResource):
                 story["url"] = "tbd" # TODO
                 story["created"] = created
                 story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
+                story["contenturl"] = self._get_content_url(id)
 
                 stories.append(story)
 
@@ -130,12 +132,9 @@ class ApiStories(ZweierleiResource):
         ret = db.replaceOrInsertStory(args=dict2list(dataToSave)).lower()
         del dataToSave["uid"] # do not return user uid
         if ret == "ok":
-            curdir = os.path.dirname(os.path.realpath(__file__))
-            apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
-            baseurl = current_app.config.get("BASEURL")
             return jsonify(merge_dict(dataToSave, {
                 "msg": "ok",
-                "contenturl": "{baseurl}{apiurl}/stories/{id}".format(baseurl=baseurl, apiurl=apiurl, id=dataToSave["id"])
+                "contenturl": self._get_content_url(dataToSave["id"])
             }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"
@@ -147,3 +146,18 @@ class ApiStories(ZweierleiResource):
         http -F -f DELETE :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d
         """
         return self.response("not implemented")
+
+    def _get_content_url(self, id):
+        """
+        get content url to upload media to
+        """
+        curdir = os.path.dirname(os.path.realpath(__file__))
+        apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
+        baseurl = current_app.config.get("BASEURL")
+
+        return "{baseurl}{apiurl}/stories/{id}".format(
+            baseurl=baseurl,
+            apiurl=apiurl,
+            id=id
+        )
+
