@@ -5,7 +5,7 @@ from datetime import timedelta
 
 class base_config(object):
     # use app.root_path!
-    #BASEDIR = os.path.abspath(os.path.dirname(__file__))
+    BASEDIR = os.path.dirname(os.path.realpath(__file__))
 
     REDIS_URL = "redis://@localhost:6379/0"
 
@@ -18,7 +18,7 @@ class base_config(object):
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
 
     # file uploads
-    UPLOAD_FOLDER = os.path.join("static", "uploads")
+    UPLOAD_FOLDER = os.path.join(BASEDIR, "static", "uploads")
     UPLOAD_DEPTH = 3
 
     DEBUG = False
@@ -27,7 +27,10 @@ class dev_config(base_config):
     DEBUG = True
 
 class test_config(base_config):
+    BASEDIR = os.path.dirname(os.path.realpath(__file__))
+
     DEBUG = True
     TESTING = True
-    UPLOAD_FOLDER = os.path.join("static", "tests", "uploads")
+    os.path.dirname(os.path.realpath(__file__))
+    UPLOAD_FOLDER = os.path.join(BASEDIR, "static", "tests", "uploads")
     REDIS_URL = "redis://@localhost:6378/0"

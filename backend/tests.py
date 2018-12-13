@@ -269,6 +269,13 @@ class Test(unittest.TestCase):
         self.assertEqual(resp.status_code, 403)
         self.assertEqual(data["msg"], "not allowed")
 
+    def test_story_upload_failed(self):
+        """
+        verify if uploaded files are deleted if writing to db fails
+        see stories.py +100
+        """
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

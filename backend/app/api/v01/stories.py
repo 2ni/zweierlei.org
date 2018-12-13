@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import uuid, json
+import uuid, json, os
 
-from flask import jsonify, request, url_for
+from flask import jsonify, request, url_for, current_app
 from flask_jwt_extended import (get_jwt_identity, jwt_required)
 from werkzeug.utils import secure_filename
 
@@ -97,7 +97,10 @@ class ApiStories(ZweierleiResource):
         if ret == "ok":
             return jsonify({"msg": "ok", "medias": medias})
         else:
-            # TODO delete uploaded medias
+            for media in medias:
+                file = os.path.join(current_app.config.get("UPLOAD_FOLDER"), media["url"])
+                os.remove(file)
+
             return self.response(ret)
 
         # TODO use url_for("uploaded_file", filename="foo"))
