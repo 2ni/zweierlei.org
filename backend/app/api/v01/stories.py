@@ -83,20 +83,21 @@ class ApiStories(ZweierleiResource):
         for i, media in enumerate(media_uploads):
             with Photoupload(media) as photoupload:
                 data = photoupload.save()
-                if data:
+
+                verify = isinstance(data, dict) and data.get("msg")
+                if verify == "ok":
+                    del data["msg"]
                     medias.append(data)
 
         if not medias:
-            return self.response("nothing to do")
+            return self.response("upload failed")
 
         # update database if fails, medias are deleted
         ret = db.appendMediasToStory(args=["uid", uid, "id", id, "medias", json.dumps(medias)]).lower()
-        print(ret)
         if ret == "ok":
             return jsonify({"msg": "ok", "medias": medias})
         else:
             # TODO delete uploaded medias
-            print(ret)
             return self.response(ret)
 
         # TODO use url_for("uploaded_file", filename="foo"))

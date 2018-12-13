@@ -19,8 +19,14 @@ class Photoupload:
         pass
 
     def __init__(self, fn):
-        self._img = PIL.Image.open(fn)
         self.tags = {}
+        self._img = None
+
+        try:
+            self._img = PIL.Image.open(fn)
+        except :
+            pass
+
 
         try:
             self.tags = ({TAGS[k]: v for k, v in self._img._getexif().items() if k in PIL.ExifTags.TAGS})
@@ -88,16 +94,19 @@ class Photoupload:
             return None
 
     def save(self):
+        if not self._img:
+            return "upload failed"
+
         # print("*"*10, self._img.filename)
         id = str(uuid.uuid4())
-        data = {"id": id}
+        data = {"id": id, "msg": "ok"}
         ending = self._img.format.lower()
         destdir = uuid2dir(id)
 
         lat, lon = self.get_latlon()
         if (lat and lon):
-            data["lat"] = round(lat, 4)
-            data["lon"] = round(lon, 4)
+            data["lat"] = str(round(lat, 4))
+            data["lon"] = str(round(lon, 4))
             # data["geometry"] = {"type": "Point", "coordinates": [round(elem, 4) for elem in [lat, lon]]}
 
         for tag in ["created", "created_human"]:
@@ -116,5 +125,5 @@ class Photoupload:
         if os.path.isfile(dest):
             return data
         else:
-            return False
+            return "upload failed"
 

@@ -19,6 +19,8 @@ class Test(unittest.TestCase):
     userdata2 = {"email": "test2@zweierlei.org", "password": "test", "firstname": "Test2"}
     newuserdata = { "firstname": "John", "email": "newemail@zweierlei.org", "password": "12345", "anything": "shouldnotwork" }
     overwritedata = { "firstname": "Foo", "email": "foobar@zweierlei.org", "password": "54321" }
+    storyid = "a96970f1-fbaa-439c-892a-cec49ea6376d"
+
     redis_process = None
     redis_port = None
     dir = os.path.dirname(os.path.realpath(__file__))
@@ -193,7 +195,7 @@ class Test(unittest.TestCase):
         self.assertEqual(data["msg"]["email"], "exists")
 
     def test_story_getdata(self):
-        resp, data = self.call("get", self.api(["stories", "a96970f1-fbaa-439c-892a-cec49ea6376d"]))
+        resp, data = self.call("get", self.api(["stories", self.storyid]))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
         self.assertEqual(diff_dict(data, "url,created,created_human,description,title,id"), [])
@@ -222,22 +224,43 @@ class Test(unittest.TestCase):
         # upload w/o image
         resp, data = self.callWithToken("put", storyapiurl, user["access_token"])
         self.assertEqual(resp.status_code, 404)
-        self.assertEqual(data["msg"], "nothing to do")
+        self.assertEqual(data["msg"], "upload failed")
 
         # upload with gps image
-        media = open(os.path.join(self.dir, "test-withgps.jpg"), "rb")
-        resp, data = self.callWithToken("put", storyapiurl, user["access_token"], {"medias": media}, content_type="multipart/form-data")
+        fns = []
+        files = {
+            "test-withgps.jpg": "id,lat,lon,created,created_human,url",
+            "test-withoutgps.jpg": "id,url",
+        }
+        for name in files.keys():
+            fns.append(open(os.path.join(self.dir, name), "rb"))
+
+        resp, data = self.callWithToken("put", storyapiurl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
 
         self.assertEqual(resp.status_code, 200)
-        for media in data["medias"]:
-            self.assertEqual(media["created"], "1540019730")
-            self.assertEqual(diff_dict(media, "created,id,lat,lon,created_human,url"), [])
+
+        # verify data from photo with gps data
+        checks = {"created": "1540019730", "lat": "68.1547", "lon": "14.2112"}
+        for tag, value in checks.items():
+            self.assertEqual(data["medias"][0][tag], str(value))
+
+        # check if files correctly saved and correct data
+        for i, media in enumerate(data["medias"]):
+            self.assertEqual(diff_dict(media, list(files.values())[i]), [])
             self.assertTrue(os.path.isfile(os.path.join(self.dir, media["url"][1:])))
 
         # after 1st media upload story should have created, lat, lon from that media
         resp, data = self.call("get", storyapiurl)
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")
+
+    def test_story_wrong_media(self):
+        user = self.login()
+        media = open(os.path.join(self.dir, "test-noimg.txt"), "rb")
+        resp, data = self.callWithToken("put", self.api(["stories", self.storyid]), user["access_token"], {"medias": media}, content_type="multipart/form-data")
+        self.assertEqual(resp.status_code, 404)
+        self.assertEqual(data["msg"], "upload failed")
+
 
 
 if __name__ == '__main__':

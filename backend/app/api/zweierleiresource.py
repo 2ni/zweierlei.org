@@ -12,7 +12,7 @@ class ZweierleiResource(Resource):
         "not implemented": 501,
         "generic": 400,
         "required": 422,
-        "nothing to do": 404
+        "failed": 404,
     }
 
     def response(self, type, fields=None):

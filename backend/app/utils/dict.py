@@ -56,7 +56,7 @@ def diff_dict(some_dict, keys):
     missing have -
     too many have +
     """
-    if type(keys).__name__ != list.__name__:
-        keys = keys.split(",")
+    if not isinstance(keys, list):
+        keys = keys.replace(" ", "").split(",")
 
     return ["+"+k for k in some_dict if k not in keys] + ["-"+k for k in keys if k not in some_dict]
