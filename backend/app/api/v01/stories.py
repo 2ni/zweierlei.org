@@ -23,14 +23,12 @@ class ApiStories(ZweierleiResource):
     exposed_fields = ["title", "description"]
 
     def get(self, id=None):
-        # method = getattr(self, action, None)
-
+        # TODO get medias for a story
         if id:
             story = db.hgetall("z:stories:{id}".format(id=id))
             if story:
                 created = str(round(db.zscore("z:stories:index:created", id)))
                 story["id"] = id
-                story["url"] = "tbd" # TODO
                 story["created"] = created
                 story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
                 story["contenturl"] = self._get_content_url(id)
@@ -45,7 +43,6 @@ class ApiStories(ZweierleiResource):
             for (id, created) in latestIds:
                 story = db.hgetall("z:stories:{id}".format(id=id))
                 story["id"] = id
-                story["url"] = "tbd" # TODO
                 story["created"] = created
                 story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
                 story["contenturl"] = self._get_content_url(id)
