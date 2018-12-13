@@ -6,6 +6,7 @@ from datetime import timedelta
 class base_config(object):
     # use app.root_path!
     BASEDIR = os.path.dirname(os.path.realpath(__file__))
+    BASEURL = "https://zweierlei.org"
 
     REDIS_URL = "redis://@localhost:6379/0"
 
@@ -28,6 +29,7 @@ class dev_config(base_config):
 
 class test_config(base_config):
     BASEDIR = os.path.dirname(os.path.realpath(__file__))
+    BASEURL = "http://127.0.0.1:5000"
 
     DEBUG = True
     TESTING = True

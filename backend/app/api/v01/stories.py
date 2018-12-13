@@ -132,9 +132,10 @@ class ApiStories(ZweierleiResource):
         if ret == "ok":
             curdir = os.path.dirname(os.path.realpath(__file__))
             apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
+            baseurl = current_app.config.get("BASEURL")
             return jsonify(merge_dict(dataToSave, {
                 "msg": "ok",
-                "contenturl": "{apiurl}/stories/{id}".format(apiurl=apiurl, id=dataToSave["id"])
+                "contenturl": "{baseurl}{apiurl}/stories/{id}".format(baseurl=baseurl, apiurl=apiurl, id=dataToSave["id"])
             }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"

@@ -214,9 +214,16 @@ class Test(unittest.TestCase):
         resp, data = self.callWithToken("post", self.api("stories"), user["access_token"], {"title": "Fancy thing", "description": "hahaha"})
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,contenturl"), [])
-        self.assertEqual(self.api(["stories", data["id"]]), data["contenturl"])
 
-        storyapiurl = self.api(["stories", data["id"]])
+        # verify if returned contenturl matches our api url
+        self.assertEqual(
+            "{base}{apiurl}".format(
+                base=self.app.config.get("BASEURL"),
+                apiurl=self.api(["stories", data["id"]])
+            ),
+            data["contenturl"])
+
+        storyapiurl = data["contenturl"]
 
         # login needed
         resp, data = self.call("put", storyapiurl)
@@ -256,7 +263,7 @@ class Test(unittest.TestCase):
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")
 
-        #close files
+        # close files
         for fn in fns:
             fn.close()
 
