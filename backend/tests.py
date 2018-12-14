@@ -233,19 +233,20 @@ class Test(unittest.TestCase):
         self.assertEqual(
             "{base}{apiurl}".format(
                 base=self.app.config.get("BASEURL"),
-                apiurl=self.api(["stories", data["id"]])
+                apiurl=self.api(["stories", data["id"], "medias"])
             ),
             data["contenturl"])
 
-        storyapiurl = data["contenturl"]
+        contenturl = data["contenturl"]
+        storyurl =  self.api(["stories", data["id"]])
 
         # login needed
-        resp, data = self.call("put", storyapiurl)
+        resp, data = self.call("put", contenturl)
         self.assertEqual(resp.status_code, 401)
         self.assertEqual(data["msg"], "Missing Authorization Header")
 
         # upload w/o image
-        resp, data = self.callWithToken("put", storyapiurl, user["access_token"])
+        resp, data = self.callWithToken("put", contenturl, user["access_token"])
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(data["msg"], "upload failed")
 
@@ -258,7 +259,7 @@ class Test(unittest.TestCase):
         for name in files.keys():
             fns.append(open(os.path.join(self.dir, name), "rb"))
 
-        resp, data = self.callWithToken("put", storyapiurl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
+        resp, data = self.callWithToken("put", contenturl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
 
         self.assertEqual(resp.status_code, 200)
 
@@ -273,7 +274,7 @@ class Test(unittest.TestCase):
             self.assertTrue(os.path.isfile(os.path.join(self.dir, media["url"])))
 
         # after 1st media upload story should have created, lat, lon from that media
-        resp, data = self.call("get", storyapiurl)
+        resp, data = self.call("get", storyurl)
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")
 

@@ -17,18 +17,6 @@ import re
 
 # from app.decorators import auth
 
-class ApiTest(ZweierleiResource):
-    """
-    Playground api
-    """
-    endpoint_url = ["/foo", "/bar"]
-
-    def post(self):
-        endpointUsed = re.sub("^.*?([^/]*)$", r"\1", request.path)
-        resp =  jsonify({"msg": "ok", "endpoint": endpointUsed})
-        resp.status_code = 201
-        return resp
-
 class ApiUsers(ZweierleiResource):
     """
     http -F GET :5000/api/v01/users Authorization:"Bearer <jwt>"
