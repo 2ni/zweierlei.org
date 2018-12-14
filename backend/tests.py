@@ -199,12 +199,14 @@ class Test(unittest.TestCase):
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
         self.assertEqual(diff_dict(data, "created,created_human,description,title,id,contenturl,lat,lon"), [])
+        for k,v in {"lon": "8.5336", "lat": "47.3608", "created": "1514136600"}.items():
+            self.assertEqual(data[k], v)
 
         resp, data = self.call("get", self.api(["stories", str(uuid.uuid4())]))
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(data["msg"], "not found")
 
-    def test_story_getlastest(self):
+    def test_story_getlatest(self):
         resp, stories = self.call("get", self.api("stories"))
         lastcreated = None
         assert len(stories) > 0

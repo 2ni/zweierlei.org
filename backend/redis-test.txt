@@ -16,5 +16,6 @@ HMSET z:stories:a96970f1-fbaa-439c-892a-cec49ea6376d title "Some title" descript
 HMSET z:stories:b96970f1-fbaa-439c-892a-cec49ea6376d title "Some more title" description "Some more text"
 ZADD z:storiesByUser:5834578e-351c-451a-94c6-500aa755f804 0 a96970f1-fbaa-439c-892a-cec49ea6376d 1 b96970f1-fbaa-439c-892a-cec49ea6376d
 ZADD z:stories:index:created 1514136600 a96970f1-fbaa-439c-892a-cec49ea6376d 1540019700 b96970f1-fbaa-439c-892a-cec49ea6376d
+GEOADD z:stories:position 8.53363 47.36080 a96970f1-fbaa-439c-892a-cec49ea6376d 8.51699 47.34387 b96970f1-fbaa-439c-892a-cec49ea6376d
 
 exec

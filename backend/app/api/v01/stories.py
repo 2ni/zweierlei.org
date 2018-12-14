@@ -24,9 +24,9 @@ class ApiStories(ZweierleiResource):
 
     def get(self, id=None):
         # TODO get medias for a story -> dedicated api
-        # TODO return lat, lon on stories and latest
         if id:
-            created = str(round(db.zscore("z:stories:index:created", id)))
+            createdvalue = db.zscore("z:stories:index:created", id)
+            created = str(round(createdvalue)) if createdvalue else None
             story = self._get_story(id, created)
             if story:
                 return jsonify(story)
@@ -155,6 +155,9 @@ class ApiStories(ZweierleiResource):
         )
 
     def _get_story(self, id, created):
+        """
+        get all necessary data for a story from db
+        """
         story = db.hgetall("z:stories:{id}".format(id=id))
         if not story:
             return None
@@ -163,5 +166,10 @@ class ApiStories(ZweierleiResource):
         story["created"] = created
         story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
         story["contenturl"] = self._get_content_url(id)
+
+        location = db.geopos("z:stories:position", id)[0]
+        if location:
+            story["lon"] = str(round(location[0], 4))
+            story["lat"] = str(round(location[1], 4))
 
         return story
