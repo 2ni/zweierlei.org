@@ -1,0 +1,26 @@
+FLUSHALL
+
+multi
+
+help ********Users*********
+HMSET z:users:5834578e-351c-451a-94c6-500aa755f804 email "test@zweierlei.org" password "$pbkdf2-sha256$29000$JURozbn33hvjfE.pFcK4Nw$sETD695WVP.EQuSKpLNlrxIgKtDzAMhr7pF.0Gr97nU" firstname "Test" lastname "User"
+SET z:usersByEmail:test@zweierlei.org 5834578e-351c-451a-94c6-500aa755f804
+SADD z:allEmails test@zweierlei.org
+
+help ********Stories*********
+HMSET z:stories:a96970f1-fbaa-439c-892a-cec49ea6376d title "Some Title" description "Some text"
+HMSET z:stories:3ee97c1f-21da-448f-ae95-e94f44f8825d title "Beeing a philosoph" description "... is like a flower in the prairie, a vessel in the wind, an elefant in the shower. Almost like stars in the sky."
+HMSET z:stories:e3dc859d-77de-49d1-b630-5e174f21ae92 title "Schnapszahl" description "Viel Rummel um die Zahl 44, welche öfters vorkommt als gedacht."
+HMSET z:stories:b4358909-3787-4b29-a859-273f86d0a89d title "Come get some" description "DukeNukum at its best. The game of the games!"
+HMSET z:stories:f66cce6d-619d-4500-996a-7ae9f443f8b3 title "Fasnacht" description "Im Muotatal gibt es die beste Zeit zum besten Zeitpunkt."
+HMSET z:stories:27abf870-1ef9-4f56-bc0e-9083bc3e1238 title "Love is in the air" description "Do some peace and marry me!"
+
+ZADD z:storiesByUser:5834578e-351c-451a-94c6-500aa755f804 0 a96970f1-fbaa-439c-892a-cec49ea6376d 1 3ee97c1f-21da-448f-ae95-e94f44f8825d 2 e3dc859d-77de-49d1-b630-5e174f21ae92 3 b4358909-3787-4b29-a859-273f86d0a89d 4 f66cce6d-619d-4500-996a-7ae9f443f8b3 5 27abf870-1ef9-4f56-bc0e-9083bc3e1238
+
+ZADD z:stories:index:created 1514136600 a96970f1-fbaa-439c-892a-cec49ea6376d 1521610544 3ee97c1f-21da-448f-ae95-e94f44f8825d 1540023600 e3dc859d-77de-49d1-b630-5e174f21ae92 1433876701 b4358909-3787-4b29-a859-273f86d0a89d 1573467071 f66cce6d-619d-4500-996a-7ae9f443f8b3 1521124207 27abf870-1ef9-4f56-bc0e-9083bc3e1238
+
+GEOADD z:stories:position 8.53363 47.36080 a96970f1-fbaa-439c-892a-cec49ea6376d 8.51699 47.34387 3ee97c1f-21da-448f-ae95-e94f44f8825d 8.53197 47.33270 e3dc859d-77de-49d1-b630-5e174f21ae92 8.48970 47.33508 b4358909-3787-4b29-a859-273f86d0a89d 8.49269 47.36422 f66cce6d-619d-4500-996a-7ae9f443f8b3 8.49890 47.37397 27abf870-1ef9-4f56-bc0e-9083bc3e1238
+
+help ********Medias*********
+RPUSH z:mediasByStory:a96970f1-fbaa-439c-892a-cec49ea6376d 8/7/f/87f0865f-7547-4402-bf84-582ff5655097.orig.jpeg
+exec

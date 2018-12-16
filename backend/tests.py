@@ -253,30 +253,36 @@ class Test(unittest.TestCase):
         # upload with gps image
         fns = []
         files = {
-            "test-withgps.jpg": "id,lat,lon,created,created_human,url",
-            "test-withoutgps.jpg": "id,url",
+            "test-withgps.jpg": "id,lat,lon,created,created_human,relative_url",
+            "test-withoutgps.jpg": "id,relative_url",
         }
         for name in files.keys():
             fns.append(open(os.path.join(self.dir, name), "rb"))
 
-        resp, data = self.callWithToken("put", contenturl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
+        resp, uploaded_medias = self.callWithToken("put", contenturl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
 
         self.assertEqual(resp.status_code, 200)
 
         # verify data from photo with gps data
         checks = {"created": "1540019730", "lat": "68.1547", "lon": "14.2112"}
         for tag, value in checks.items():
-            self.assertEqual(data["medias"][0][tag], str(value))
+            self.assertEqual(uploaded_medias["medias"][0][tag], str(value))
 
         # check if files correctly saved and correct data
-        for i, media in enumerate(data["medias"]):
+        for i, media in enumerate(uploaded_medias["medias"]):
             self.assertEqual(diff_dict(media, list(files.values())[i]), [])
-            self.assertTrue(os.path.isfile(os.path.join(self.dir, media["url"])))
+            self.assertTrue(os.path.isfile(os.path.join(self.app.config.get("UPLOAD_FOLDER"), media["relative_url"])))
 
         # after 1st media upload story should have created, lat, lon from that media
         resp, data = self.call("get", storyurl)
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")
+
+        # get media links from story
+        resp, data = self.call("get", storyurl + "/medias")
+        for i, media in enumerate(data["medias"]):
+            self.assertEqual(media["id"], uploaded_medias["medias"][i]["id"])
+            self.assertEqual(diff_dict(media, ["id", "url"]), [])
 
         # close files
         for fn in fns:
@@ -305,7 +311,8 @@ class Test(unittest.TestCase):
     def test_story_upload_failed(self):
         """
         verify if uploaded files are deleted if writing to db fails
-        see stories.py +100
+        see medias.py +80
+        difficult to test, howto simulate failure of db writing?
         """
         pass
 

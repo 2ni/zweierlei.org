@@ -2,6 +2,7 @@
 
 import PIL.Image, uuid, os
 from PIL.ExifTags import TAGS
+from flask import current_app
 
 import dateutil.parser as dp
 from datetime import datetime as dt
@@ -101,7 +102,10 @@ class Photoupload:
         id = str(uuid.uuid4())
         data = {"id": id, "msg": "ok"}
         ending = self._img.format.lower()
-        destdir = uuid2dir(id)
+        base_dir = current_app.config.get("UPLOAD_FOLDER")
+        uuiddir = uuid2dir(id)
+
+        destdir = os.path.join(base_dir, uuiddir)
 
         lat, lon = self.get_latlon()
         if (lat and lon):
@@ -119,7 +123,8 @@ class Photoupload:
             os.makedirs(destdir)
 
         dest = os.path.join(destdir, "{id}.orig.{ending}".format(id=id, ending=ending))
-        data["url"] = os.path.join("/", dest)
+        # TODO save relative to db not id!
+        data["relative_url"] = "{uuiddir}/{id}.orig.{ending}".format(uuiddir=uuiddir, id=id, ending=ending)
         self._img.save(dest)
 
         if os.path.isfile(dest):

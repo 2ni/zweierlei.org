@@ -7,7 +7,6 @@ from flask_jwt_extended import (get_jwt_identity, jwt_required)
 from werkzeug.utils import secure_filename
 
 from app import db
-from app.models.photoupload import Photoupload
 from app.api.zweierleiresource import ZweierleiResource
 from app.utils.dict import (check_mandatory_fields, filter_dict, dict2list, merge_dict)
 
@@ -23,7 +22,6 @@ class ApiStories(ZweierleiResource):
     exposed_fields = ["title", "description"]
 
     def get(self, id=None):
-        # TODO get medias for a story -> dedicated api
         if id:
             createdvalue = db.zscore("z:stories:index:created", id)
             created = str(round(createdvalue)) if createdvalue else None

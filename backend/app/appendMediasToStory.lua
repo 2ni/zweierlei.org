@@ -36,7 +36,7 @@ end
 -- TODO keys computed for now (should be given by KEYS argument when calling script
 local KEYstory = "z:stories:" .. argv["id"]
 local KEYstoryByUser = "z:storiesByUser:" .. argv["uid"]
-local KEYmediasByStory = "mediasByStory:" .. argv["id"]
+local KEYmediasByStory = "z:mediasByStory:" .. argv["id"]
 local KEYstoriesPosition = "z:stories:position"
 local KEYcreated = "z:stories:index:created"
 local KEYuser = "z:users:" .. argv["uid"]
@@ -69,8 +69,9 @@ local data =  cjson.decode(argv["medias"])
 -- print("inserting into " .. KEYmediasByStory)
 for i,d in pairs(data) do
     if d["id"] ~= nil and currentmedias[d["id"]] ~= 1 then
-        -- print(d["id"])
-        table.insert(newmedias, d["id"])
+        -- print(d["relative_url"])
+        -- insert <3 digits from id>/<id>.<type> eg 8/7/f/87f0865f-7547-4402-bf84-582ff5655097.jpeg
+        table.insert(newmedias, d["relative_url"])
         newmedias_count = newmedias_count+1
         -- get 1st lat/lon/created from uploads
         if d["lat"] and d["lon"] and pos["lat"] == nil then

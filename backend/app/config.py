@@ -7,6 +7,7 @@ class base_config(object):
     # use app.root_path!
     BASEDIR = os.path.dirname(os.path.realpath(__file__))
     BASEURL = "https://zweierlei.org"
+    UPLOADURL = "{base}/uploads".format(base=BASEURL)
 
     REDIS_URL = "redis://@localhost:6379/0"
 
@@ -25,11 +26,14 @@ class base_config(object):
     DEBUG = False
 
 class dev_config(base_config):
+    BASEURL = "http://127.0.0.1:5000"
+    UPLOADURL = "{base}/uploads".format(base=BASEURL)
     DEBUG = True
 
 class test_config(base_config):
     BASEDIR = os.path.dirname(os.path.realpath(__file__))
     BASEURL = "http://127.0.0.1:5000"
+    UPLOADURL = "{base}/uploads".format(base=BASEURL)
 
     DEBUG = True
     TESTING = True

@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 from app import db
 from app.models.photoupload import Photoupload
 from app.api.zweierleiresource import ZweierleiResource
-from app.utils.dict import (check_mandatory_fields, filter_dict, dict2list, merge_dict)
+from app.utils.dir import mediaid2url
 
 from datetime import datetime as dt
 
@@ -17,12 +17,28 @@ from app.decorators import jwt_required_consume_attach
 
 class ApiMedias(ZweierleiResource):
     """
-    http -F GET :5000/api/v01/stories/e3dc859d-77de-49d1-b630-5e174f21ae92/medias
+    http -F GET :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d/medias
     """
     endpoint_url = ["/stories/<id>/medias"]
 
+    def get(self, id):
+        """
+        get all medias from a story
+        """
+        data = db.lrange("z:mediasByStory:{id}".format(id=id), 0, -1)
+
+        medias = []
+        for relative in data:
+            url = mediaid2url(relative)
+            medias.append({
+                "id": re.sub("^.*/([^.]*).*", r"\1", relative),
+                "url": url,
+            })
+
+        return jsonify({"msg": "ok", "medias": medias})
+
     @jwt_required_consume_attach
-    def put(self, id=None):
+    def put(self, id):
         """
         Add media to stories
         see https://stackoverflow.com/questions/28982974/flask-restful-upload-image
