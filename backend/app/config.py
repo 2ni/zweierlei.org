@@ -5,9 +5,10 @@ from datetime import timedelta
 
 class base_config(object):
     # use app.root_path!
-    BASEDIR = os.path.dirname(os.path.realpath(__file__))
-    BASEURL = "https://zweierlei.org"
-    UPLOADURL = "{base}/uploads".format(base=BASEURL)
+    BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+    BASE_URL = "https://zweierlei.org"
+    UPLOAD_URL = "{base}/uploads".format(base=BASE_URL)
+    UPLOAD_SIZES = {"s": 180, "m": 360, "l": 720, "xl": 1440}
 
     REDIS_URL = "redis://@localhost:6379/0"
 
@@ -20,23 +21,23 @@ class base_config(object):
     JWT_BLACKLIST_TOKEN_CHECKS = ['access', 'refresh']
 
     # file uploads
-    UPLOAD_FOLDER = os.path.join(BASEDIR, "static", "uploads")
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
     UPLOAD_DEPTH = 3
 
     DEBUG = False
 
 class dev_config(base_config):
-    BASEURL = "http://127.0.0.1:5000"
-    UPLOADURL = "{base}/uploads".format(base=BASEURL)
+    BASE_URL = "http://127.0.0.1:5000"
+    UPLOAD_URL = "{base}/uploads".format(base=BASE_URL)
     DEBUG = True
 
 class test_config(base_config):
-    BASEDIR = os.path.dirname(os.path.realpath(__file__))
-    BASEURL = "http://127.0.0.1:5000"
-    UPLOADURL = "{base}/uploads".format(base=BASEURL)
+    BASE_DIR = os.path.dirname(os.path.realpath(__file__))
+    BASE_URL = "http://127.0.0.1:5000"
+    UPLOAD_URL = "{base}/uploads".format(base=BASE_URL)
 
     DEBUG = True
     TESTING = True
     os.path.dirname(os.path.realpath(__file__))
-    UPLOAD_FOLDER = os.path.join(BASEDIR, "static", "tests", "uploads")
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "tests", "uploads")
     REDIS_URL = "redis://@localhost:6378/0"

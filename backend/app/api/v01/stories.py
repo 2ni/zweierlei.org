@@ -90,7 +90,7 @@ class ApiStories(ZweierleiResource):
         """
         curdir = os.path.dirname(os.path.realpath(__file__))
         apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
-        baseurl = current_app.config.get("BASEURL")
+        baseurl = current_app.config.get("BASE_URL")
 
         return "{baseurl}{apiurl}/stories/{id}/medias".format(
             baseurl=baseurl,

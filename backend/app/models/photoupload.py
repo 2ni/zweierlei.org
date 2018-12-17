@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import PIL.Image, uuid, os
+import PIL.Image, uuid, os, copy
 from PIL.ExifTags import TAGS
 from flask import current_app
 
@@ -123,9 +123,16 @@ class Photoupload:
             os.makedirs(destdir)
 
         dest = os.path.join(destdir, "{id}.orig.{ending}".format(id=id, ending=ending))
-        # TODO save relative to db not id!
         data["relative_url"] = "{uuiddir}/{id}.orig.{ending}".format(uuiddir=uuiddir, id=id, ending=ending)
         self._img.save(dest)
+
+        # TODO generate smaller files in task queue (flask-rq2)
+        sizes = current_app.config.get("UPLOAD_SIZES")
+        for desc, size in sizes.items():
+            thumb = copy.copy(self._img)
+            thumb.thumbnail((size, size*2), PIL.Image.ANTIALIAS)
+            thumb.convert("RGB").save(os.path.join(destdir, "{id}.{size}.jpg".format(id=id, size=size)))
+
 
         if os.path.isfile(dest):
             return data

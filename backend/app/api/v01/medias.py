@@ -80,7 +80,7 @@ class ApiMedias(ZweierleiResource):
         # update database if fails, medias are deleted
         ret = db.appendMediasToStory(args=["uid", uid, "id", id, "medias", json.dumps(medias)]).lower()
         if ret == "ok":
-            # TODO generate smaller files in task queue
+            # TODO generate smaller files in task queue (flask-rq2)
             return jsonify({"msg": "ok", "medias": medias})
         else:
             for media in medias:

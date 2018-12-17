@@ -237,7 +237,7 @@ class Test(unittest.TestCase):
         # verify if returned contenturl matches our api url
         self.assertEqual(
             "{base}{apiurl}".format(
-                base=self.app.config.get("BASEURL"),
+                base=self.app.config.get("BASE_URL"),
                 apiurl=self.api(["stories", data["id"], "medias"])
             ),
             data["contenturl"])
@@ -273,10 +273,16 @@ class Test(unittest.TestCase):
         for tag, value in checks.items():
             self.assertEqual(uploaded_medias["medias"][0][tag], str(value))
 
-        # check if files correctly saved and correct data
+        # check if files and thumbnails correctly saved and correct data
         for i, media in enumerate(uploaded_medias["medias"]):
             self.assertEqual(diff_dict(media, list(files.values())[i]), [])
-            self.assertTrue(os.path.isfile(os.path.join(self.app.config.get("UPLOAD_FOLDER"), media["relative_url"])))
+            path = os.path.join(self.app.config.get("UPLOAD_FOLDER"), media["relative_url"])
+            self.assertTrue(os.path.isfile(path))
+            for size in self.app.config.get("UPLOAD_SIZES").keys():
+                fn_thumb = media["relative_url"].replace(".orig.", ".{size}.".format(size=size))
+                fn_path = os.path.join(self.app.config.get("UPLOAD_FOLDER"), media["relative_url"])
+                self.assertTrue(os.path.isfile(fn_path))
+
 
         # after 1st media upload story should have created, lat, lon from that media
         resp, data = self.call("get", storyurl)
