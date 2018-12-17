@@ -19,7 +19,7 @@ class ApiStories(ZweierleiResource):
     http -F GET :5000/api/v01/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
     """
     endpoint_url = ["/stories", "/stories/<id>"]
-    exposed_fields = ["title", "description"]
+    exposed_fields = ["title", "description", "activity"]
 
     def get(self, id=None):
         if id:

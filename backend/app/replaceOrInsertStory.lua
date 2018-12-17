@@ -20,7 +20,7 @@ end
 -- check mandatory fields
 local err_elms = ""
 local err_count = 0
-for i, key in pairs({"uid", "id", "title", "description"}) do
+for i, key in pairs({"uid", "id", "title", "description", "activity"}) do
     if not argv[key] or argv[key] == "None" then
         err_elms = err_elms .. key .. ","
         err_count = err_count+1
@@ -49,7 +49,7 @@ end
 
 -- add meta data
 local argvPacked = {}
-for k,v in pairs({"title", "description"}) do table.insert(argvPacked, v) table.insert(argvPacked, argv[v]) end
+for k,v in pairs({"title", "description", "activity"}) do table.insert(argvPacked, v) table.insert(argvPacked, argv[v]) end
 redis.call("HMSET", KEYstory, unpack(argvPacked))
 
 -- save created if it not exists
