@@ -89,7 +89,7 @@ class Test(unittest.TestCase):
 
     def register(self, data):
         resp, newuser = self.call("post", self.api("register"), data)
-        return newuser
+        return resp.status_code, newuser
 
 
     @staticmethod
@@ -145,15 +145,20 @@ class Test(unittest.TestCase):
         self.assertEqual(resp.status_code, 422)
         self.assertEqual(data["msg"]["password"], "required element")
 
+        # wrong email
+        code, user = self.register({"email": "foobar", "password": "test"})
+        self.assertEqual(code, 422)
+        self.assertEqual(user["msg"]["email"], "wrong format")
+
         # register newuser
-        resp, newuser = self.call("post", self.api("register"), self.newuserdata)
+        code, newuser = self.register(self.newuserdata)
         self.assertEqual(newuser["msg"], "ok")
         self.assertEqual(newuser["email"], self.newuserdata["email"])
         assert "password" not in data.keys()
 
         # already registered
-        resp, data = self.call("post", self.api("register"), self.newuserdata)
-        self.assertEqual(resp.status_code, 409)
+        code, data = self.register(self.newuserdata)
+        self.assertEqual(code, 409)
         self.assertEqual(data["msg"]["email"], "exists")
 
     def test_user_update(self):
@@ -222,7 +227,7 @@ class Test(unittest.TestCase):
         """
         new user, new story
         """
-        user = self.register({"email": "storyteller@zweierlei.org", "password": "test"})
+        code, user = self.register({"email": "storyteller@zweierlei.org", "password": "test"})
 
         # create story
         resp, data = self.callWithToken("post", self.api("stories"), user["access_token"], {"title": "Fancy thing", "description": "hahaha"})
@@ -302,7 +307,7 @@ class Test(unittest.TestCase):
         resp, story = self.call("get", self.api(["stories", self.storyid]))
         apiurl = story["contenturl"]
 
-        user = self.register({"email": str(uuid.uuid4())+"@zweierlei.org", "password": "test"})
+        code, user = self.register({"email": str(uuid.uuid4())+"@zweierlei.org", "password": "test"})
         media = open(os.path.join(self.dir, "test-withgps.jpg"), "rb")
         resp, data = self.callWithToken("put", apiurl, user["access_token"], {"medias": media}, content_type="multipart/form-data")
         self.assertEqual(resp.status_code, 403)

@@ -29,7 +29,8 @@ class ApiLogin(ZweierleiResource):
 
     def post(self):
         """
-        http -F POST :5000/api/v01/login email=test@zweierlei.org xpassword="test
+        http -F POST :5000/api/v01/login email=test@zweierlei.org password="test
+        http -F POST :5000/api/v01/register email=test@zweierlei.org password="test
         """
         data = request.json or {}
 
@@ -53,6 +54,12 @@ class ApiLogin(ZweierleiResource):
 
         # register
         else:
+            # verify email by simple validation for now
+            # https://www.scottbrady91.com/Email-Verification/Python-Email-Verification-Script
+            match = re.match("^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$", data["email"])
+            if match == None:
+                return self.response("wrong format", "email")
+
             dataFiltered = filter_dict(data, self.exposedFields)
             dataFiltered["password"] = sha256.hash(data["password"])
             dataFiltered["uid"] = uuid.uuid4()

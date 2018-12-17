@@ -10,6 +10,7 @@ class ZweierleiResource(Resource):
         "not allowed": 403,
         "not found": 404,
         "not implemented": 501,
+        "wrong format": 422,
         "generic": 400,
         "required": 422,
         "failed": 404,
@@ -30,7 +31,7 @@ class ZweierleiResource(Resource):
                 status_code = code
                 break
 
-        if fields:
+        if fields and isinstance(fields, str):
             fields = fields.split(",")
 
             msg = {}
