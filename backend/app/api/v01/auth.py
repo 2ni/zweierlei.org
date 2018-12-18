@@ -29,8 +29,8 @@ class ApiLogin(ZweierleiResource):
 
     def post(self):
         """
-        http -F POST :5000/api/v01/login email=test@zweierlei.org password="test
-        http -F POST :5000/api/v01/register email=test@zweierlei.org password="test
+        http -F POST :5000/api/v01/login email=test@zweierlei.org password="test"
+        http -F POST :5000/api/v01/register email=test@zweierlei.org password="test"
         """
         data = request.json or {}
 
