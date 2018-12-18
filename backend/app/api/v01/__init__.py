@@ -2,11 +2,13 @@
 
 from flask import Blueprint
 from flask_restful import Api
+from flask_cors import CORS
 
 import glob, os, mmap, re, pkgutil
 
 bp = Blueprint("api_v01", __name__)
 api = Api(bp)
+CORS(bp)
 
 """
 from .users import ApiUsers

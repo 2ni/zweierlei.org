@@ -17,6 +17,7 @@ from app.decorators import jwt_required_consume_attach
 class ApiStories(ZweierleiResource):
     """
     http -F GET :5000/api/v01/stories/e3dc859d-77de-49d1-b630-5e174f21ae92
+    http -F GET :5000/api/v01/stories
     """
     endpoint_url = ["/stories", "/stories/<id>"]
     exposed_fields = ["title", "description", "activity"]
