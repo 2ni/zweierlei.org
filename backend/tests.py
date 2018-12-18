@@ -203,7 +203,7 @@ class Test(unittest.TestCase):
         resp, data = self.call("get", self.api(["stories", self.storyid]))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
-        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,contenturl,lat,lon,activity"), [])
+        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,content_url,lat,lon,activity"), [])
         for k,v in {"lon": "8.5336", "lat": "47.3608", "created": "1514136600"}.items():
             self.assertEqual(data[k], v)
 
@@ -217,7 +217,7 @@ class Test(unittest.TestCase):
         assert len(stories) > 0
         assert len(stories) <= 3
         for story in stories:
-            self.assertEqual(diff_dict(story, "created,created_human,description,title,id,contenturl,lat,lon,activity"), [])
+            self.assertEqual(diff_dict(story, "created,created_human,description,title,id,content_url,lat,lon,activity"), [])
             if lastcreated:
                 assert lastcreated >= story["created"]
 
@@ -232,26 +232,26 @@ class Test(unittest.TestCase):
         # create story
         resp, data = self.callWithToken("post", self.api("stories"), user["access_token"], {"title": "Fancy thing", "description": "hahaha", "activity": "utensils"})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,contenturl, activity"), [])
+        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,content_url, activity"), [])
 
-        # verify if returned contenturl matches our api url
+        # verify if returned content_url matches our api url
         self.assertEqual(
             "{base}{apiurl}".format(
                 base=self.app.config.get("BASE_URL"),
                 apiurl=self.api(["stories", data["id"], "medias"])
             ),
-            data["contenturl"])
+            data["content_url"])
 
-        contenturl = data["contenturl"]
+        content_url = data["content_url"]
         storyurl =  self.api(["stories", data["id"]])
 
         # login needed
-        resp, data = self.call("put", contenturl)
+        resp, data = self.call("put", content_url)
         self.assertEqual(resp.status_code, 401)
         self.assertEqual(data["msg"], "Missing Authorization Header")
 
         # upload w/o image
-        resp, data = self.callWithToken("put", contenturl, user["access_token"])
+        resp, data = self.callWithToken("put", content_url, user["access_token"])
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(data["msg"], "upload failed")
 
@@ -264,7 +264,7 @@ class Test(unittest.TestCase):
         for name in files.keys():
             fns.append(open(os.path.join(self.dir, name), "rb"))
 
-        resp, uploaded_medias = self.callWithToken("put", contenturl, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
+        resp, uploaded_medias = self.callWithToken("put", content_url, user["access_token"], {"medias": fns}, content_type="multipart/form-data")
 
         self.assertEqual(resp.status_code, 200)
 
@@ -301,7 +301,7 @@ class Test(unittest.TestCase):
 
     def test_story_wrong_media(self):
         resp, story = self.call("get", self.api(["stories", self.storyid]))
-        apiurl = story["contenturl"]
+        apiurl = story["content_url"]
 
         user = self.login()
         media = open(os.path.join(self.dir, "test-noimg.txt"), "rb")
@@ -311,7 +311,7 @@ class Test(unittest.TestCase):
 
     def test_story_upload_not_allowed(self):
         resp, story = self.call("get", self.api(["stories", self.storyid]))
-        apiurl = story["contenturl"]
+        apiurl = story["content_url"]
 
         code, user = self.register({"email": str(uuid.uuid4())+"@zweierlei.org", "password": "test"})
         media = open(os.path.join(self.dir, "test-withgps.jpg"), "rb")

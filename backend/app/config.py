@@ -24,6 +24,9 @@ class base_config(object):
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
     UPLOAD_DEPTH = 3
 
+    # number of stories returned
+    NUM_STORIES = 6
+
     DEBUG = False
 
 class dev_config(base_config):

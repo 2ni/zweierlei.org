@@ -34,7 +34,7 @@ class ApiStories(ZweierleiResource):
         else:
             # get latest stories
             # zrevrangebyscore(name, max, min, start=None, num=None, withscores=False, score_cast_func=<type 'float'>)
-            latestIds = db.zrevrangebyscore("z:stories:index:created", "inf", 0, 0, 3, True)
+            latestIds = db.zrevrangebyscore("z:stories:index:created", "inf", 0, 0, current_app.config.get("NUM_STORIES"), True)
             stories = []
             for (id, created) in latestIds:
                 story = self._get_story(id, created)
@@ -72,7 +72,7 @@ class ApiStories(ZweierleiResource):
         if ret == "ok":
             return jsonify(merge_dict(dataToSave, {
                 "msg": "ok",
-                "contenturl": self._get_content_url(dataToSave["id"])
+                "content_url": self._get_content_url(dataToSave["id"])
             }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"
@@ -110,7 +110,7 @@ class ApiStories(ZweierleiResource):
         story["id"] = id
         story["created"] = created
         story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
-        story["contenturl"] = self._get_content_url(id)
+        story["content_url"] = self._get_content_url(id)
 
         location = db.geopos("z:stories:position", id)[0]
         if location:
