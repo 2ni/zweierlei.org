@@ -5,4 +5,17 @@ function wait(ms) {
     };
 }
 
-export { wait };
+/*
+ * usage
+ * delay(1000).then(() => {
+ *  // do stuff after 1000mx
+ * });
+ *
+ */
+function delay(ms, f) {
+  return new Promise(function(resolve) {
+    setTimeout(resolve.bind(null, f), ms)
+  });
+}
+
+export { wait, delay };

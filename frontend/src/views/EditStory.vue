@@ -153,14 +153,32 @@ export default {
     processForm(e) {
       this.$http.post('stories' + (this.$route.params.id ? '/'+this.$route.params.id : ''), this.story)
       .then(response => {
-        // just set them back in case sth is weird
-        this.story = response.data;
+        const { data } = response;
         this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
+        if (!this.$route.params.id) {
+          // new entry -> redirect to detail page
+          this.$router.push({name: 'EditStory', params: {'id': data.id}});
+        }
+
+        // just set data from what we got
+        this.story = data;
       })
       .catch(error => {
-        console.log('error', error);
-        if(error.response) {
-          console.log(error.response.data.msg, error.response.status);
+        const { response: { status }, response: { data: { msg } } } = error;
+        if (status === 422) {
+          // set errors returned from backend
+          // https://github.com/baianat/vee-validate/issues/1153
+          console.log(status, msg);
+          for (var element in msg) {
+            let field = this.$validator.fields.find({name: element});
+            field.setFlags({invalid: true});
+            this.errors.add({
+              field: field.name,
+              msg: msg[element],
+              id: field.id,
+              scope: field.scope,
+            });
+          }
         }
       })
     },
