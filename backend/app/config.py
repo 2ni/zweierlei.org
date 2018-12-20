@@ -31,13 +31,18 @@ class base_config(object):
 
 class dev_config(base_config):
     BASE_URL = "http://127.0.0.1:5000"
-    UPLOAD_URL = "{base}/uploads".format(base=BASE_URL)
+    UPLOAD_URL = "{base}/static/uploads".format(base=BASE_URL)
     DEBUG = True
+
+    ACCESS_EXPIRES = timedelta(minutes=5)
+    REFRESH_EXPIRES = timedelta(days=1)
+    JWT_ACCESS_TOKEN_EXPIRES = ACCESS_EXPIRES
+    JWT_REFRESH_TOKEN_EXPIRES = REFRESH_EXPIRES
 
 class test_config(base_config):
     BASE_DIR = os.path.dirname(os.path.realpath(__file__))
     BASE_URL = "http://127.0.0.1:5000"
-    UPLOAD_URL = "{base}/uploads".format(base=BASE_URL)
+    UPLOAD_URL = "{base}/static/uploads".format(base=BASE_URL)
 
     DEBUG = True
     TESTING = True
