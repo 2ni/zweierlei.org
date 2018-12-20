@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="navbar-brand">
-      <router-link class="navbar-item" to="home">{{helloUser()}}</router-link>
+      <router-link class="navbar-item" :to="'/'+$i18n.locale+'/home'">zweierlei.org</router-link><span class="navbar-item">{{ helloUser() }}</span>
       <span class="navbar-burger burger" data-target="navbarMenu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
         <span></span>
         <span></span>
@@ -46,11 +46,9 @@ export default {
       }
     },
     helloUser() {
-      let title = 'zweierlei.org';
       if (this.user) {
-        title = title + ' - Hello ' + this.user.firstname;
+        return 'Hello ' + this.user.firstname;
       }
-      return title;
     },
   },
   data() {
