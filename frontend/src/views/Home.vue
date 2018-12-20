@@ -18,7 +18,7 @@
           </div>
           <div class="card-header">
             <p class="card-header-title has-background-dark has-text-white"><MapIcon :type="story.activity" />
-              <a :href="['/'+$i18n.locale+'/edit/story/'+story.id]">{{ story.title }}</a>
+              <router-link :to="'/'+$i18n.locale+'/edit/story/'+story.id">{{ story.title }}</router-link>
             </p>
           </div>
           <div class="card-content">
