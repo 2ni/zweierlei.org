@@ -1,13 +1,17 @@
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
+import VeeValidate from 'vee-validate';
 import L from 'leaflet';
 import App from './App.vue';
 import router from './router';
 import store from './store';
 import './registerServiceWorker';
+import './axios-response-interceptor';
 
+/*
 import { fakeBackend } from './helpers';
 fakeBackend();
+*/
 
 import { messages, defaultLocale } from './locales/lang.json';
 
@@ -92,6 +96,8 @@ router.beforeEach((to: any, from: any, next: any) => {
   next();
 */
 });
+
+Vue.use(VeeValidate);
 
 import Default from './layouts/Default.vue';
 import Empty from './layouts/Empty.vue';

@@ -1,60 +1,32 @@
 /*
  * http://jasonwatmore.com/post/2018/07/06/vue-vuex-jwt-authentication-tutorial-example#loginpage-vue
+ * might be easier: https://scotch.io/tutorials/handling-authentication-in-vue-using-vuex
  *
  * handles all api calls concerning authentication of the user
  */
-import { authHeader } from '@/helpers';
+// import { authHeader } from '@/helpers';
+import axios from 'axios';
 
 export const userService = {
   login,
   logout,
 };
 
-const API_URL = 'http://localhost:8080';
-
-function login(username: any, password: any) {
-  const requestOptions = {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-  };
-
-  return fetch(`${API_URL}/users/authenticate`, requestOptions)
-    .then(handleResponse)
-    .then(
-      (user) => {
-        if (user.token) {
-          localStorage.setItem('user', JSON.stringify(user));
-        }
-        return user;
-      },
-      /*
-      (error) => {
-        console.log(error);
-        dispatch('alert/error', { error }, { root: true });
-      },
-      */
-    );
+function login(user: any) {
+  return axios({url: 'login', baseURL: process.env.VUE_APP_API_URL, method: 'POST', data: user})
+    .then((user) => {
+      if (user.data.msg == 'ok') {
+        localStorage.setItem('user', JSON.stringify(user.data));
+      }
+    })
+    .catch((error) => {
+      if (error.response.status === 401) {
+        logout();
+        return Promise.reject(error.response.data.msg);
+      }
+    });
 }
 
 function logout() {
   localStorage.removeItem('user');
-}
-
-function handleResponse(response: any) {
-  return response.text().then((text: any) => {
-    const data = text && JSON.parse(text);
-    if (!response.ok) {
-      if (response.status === 401) {
-        // auto logout if 401 from api
-        logout();
-        location.reload(true);
-      }
-
-      const error = (data && data.message) || response.statusText;
-      return Promise.reject(error);
-    }
-
-    return data;
-  });
 }

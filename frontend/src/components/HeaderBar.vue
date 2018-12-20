@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="navbar-brand">
-      <router-link class="navbar-item" to="home">zweierlei.org</router-link>
+      <router-link class="navbar-item" to="home">{{helloUser()}}</router-link>
       <span class="navbar-burger burger" data-target="navbarMenu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
         <span></span>
         <span></span>
@@ -15,7 +15,7 @@
           v-for="navItem in navItems"
           class="navbar-item"
           v-bind:class="$route.name == navItem.name ? 'is-active' : ''"
-          :to="navItem.path">
+          :to="'/'+$i18n.locale+'/'+navItem.path">
           {{ navItem.path === 'login' && isLoggedIn ? 'Logout' : navItem.name }}
         </router-link>
         <ul class="navbar-item">
@@ -45,15 +45,24 @@ export default {
         event.preventDefault();
       }
     },
+    helloUser() {
+      let title = 'zweierlei.org';
+      if (this.user) {
+        title = title + ' - Hello ' + this.user.firstname;
+      }
+      return title;
+    },
   },
   data() {
     return {
       navItems: [],
       showNav: false,
+      user: false,
     };
   },
   computed: {
     isLoggedIn() {
+      this.user = JSON.parse(localStorage.getItem('user'));
       return this.$store.state.authentication.status === 'loggedIn';
     },
   },

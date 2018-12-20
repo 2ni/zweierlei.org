@@ -7,6 +7,7 @@ import Test from './views/Test.vue';
 import Form from './views/Form.vue';
 import Bulma from './views/Bulma.vue';
 import Base from './views/Base.vue';
+import EditStory from './views/EditStory.vue';
 import PageNotFound from './views/PageNotFound.vue';
 
 import { defaultLocale } from './locales/lang.json';
@@ -28,6 +29,18 @@ export default new Router({
       path: '/:locale(en|de)',
       component: Base,
       children: [
+        {
+          path: 'edit',
+          component: Base,
+          children: [
+            {
+              path: 'story/:id?',
+              name: 'EditStory',
+              component: EditStory,
+              meta: { auth: true },
+            },
+          ],
+        },
         {
           path: 'login',
           name: 'Login',

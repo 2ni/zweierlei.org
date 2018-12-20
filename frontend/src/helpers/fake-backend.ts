@@ -5,7 +5,7 @@
 import { fakeUpload } from './';
 
 export function fakeBackend() {
-    const users = [{ id: 1, username: 'test@test.com', password: 'test', firstName: 'Test', lastName: 'User' }];
+    const users = [{ uid: 1, email: 'test@test.com', password: 'test', firstname: 'Test', lastname: 'User' }];
     const realFetch = window.fetch;
     console.log('backend mocked!');
     window.fetch = (url: any, opts: any) => {
@@ -14,29 +14,29 @@ export function fakeBackend() {
             setTimeout(() => {
 
                 // authenticate
-                if (url.endsWith('/users/authenticate') && opts.method === 'POST') {
+                if (url.endsWith('/login') && opts.method === 'POST') {
                     // get parameters from post request
                     const params = JSON.parse(opts.body);
 
                     // find if any user matches login credentials
                     const filteredUsers = users.filter((user) => {
-                      return user.username === params.username && user.password === params.password;
+                      return user.email === params.email && user.password === params.password;
                     });
 
                     if (filteredUsers.length) {
                         // if login details are valid return user details and fake jwt token
                         const user = filteredUsers[0];
                         const responseJson = {
-                            id: user.id,
-                            username: user.username,
-                            firstName: user.firstName,
-                            lastName: user.lastName,
+                            uid: user.uid,
+                            email: user.email,
+                            firstname: user.firstname,
+                            lastname: user.lastname,
                             token: 'fake-jwt-token',
                         };
                         resolve({ ok: true, text: () => Promise.resolve(JSON.stringify(responseJson)) });
                     } else {
                         // else return error
-                        reject('Username or password is incorrect');
+                        reject('Email or password is incorrect');
                     }
 
                     return;

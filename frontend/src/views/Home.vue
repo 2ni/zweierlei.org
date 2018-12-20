@@ -1,16 +1,25 @@
 <template>
   <div class="container">
     <div class="columns is-multiline">
-      <div class="column is-one-third" v-for="story in stories">
+      <div v-if="errored">
+        <p>We could not retrieve the data at this moment.</p>
+      </div>
+      <div v-else-if="loading">
+        Loading...
+      </div>
+      <div v-else class="column is-one-third" v-for="(story, i) in stories">
 
         <div class="card">
           <div class="card-image">
             <figure class="image is-4by3">
-              <img :src="story.img ? story.img + '?' + Math.random() : 'https://bulma.io/images/placeholders/1280x960.png'" alt="foo">
+              <img :src="medias[i] ? medias[i] : 'https://bulma.io/images/placeholders/1280x960.png'" :title="story.title">
             </figure>
+            <pre class="content is-small">{{ story }} {{ medias[i] }}</pre>
           </div>
           <div class="card-header">
-            <p class="card-header-title has-background-dark has-text-white"><MapIcon :type="story.activity" />{{ story.title }}</p>
+            <p class="card-header-title has-background-dark has-text-white"><MapIcon :type="story.activity" />
+              <a :href="['/'+$i18n.locale+'/edit/story/'+story.id]">{{ story.title }}</a>
+            </p>
           </div>
           <div class="card-content">
             <p class="content is-small">{{ story.description }}</p>
@@ -38,9 +47,31 @@ export default {
     MapIcon,
     // HelloWorld,
   },
+  mounted() {
+    (this as any).$http.get('stories')
+      .then(response => {
+        (this as any).stories = response.data;
+        for (let i = 0; i<(this as any).stories.length; i++) {
+          (this as any).$http.get((this as any).stories[i].content_url)
+            .then(response => {
+              if (response.data.medias[0]) {
+                Vue.set((this as any).medias, i, response.data.medias[0].url);
+              }
+            })
+        }
+      })
+      .catch(error => {
+        (this as any).errored = true;
+        console.log(error);
+      })
+      .finally(() => (this as any).loading = false)
+  },
   data() {
     return {
-      stories: require('@/views/stories.json'),
+      stories: null,
+      medias: {},
+      loading: true,
+      errored: false
     };
   },
 };
