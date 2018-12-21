@@ -7,6 +7,7 @@
  */
 import Vue from 'vue';
 import axios from 'axios';
+import router from './router';
 
 const instance = axios.create({baseURL: process.env.VUE_APP_API_URL});
 
@@ -49,8 +50,10 @@ instance.interceptors.response.use((response) => {
         // console.log("refresh error", status, msg);
         if (status === 401) {
           localStorage.removeItem('user');
-          // TODO use this.$router to load route to not reload page completely
-          location.reload();
+          // use route to load login form to not reload page completely
+          // location.reload();
+          let lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
+          router.push('/' + lang + '/login?f=' + window.location.pathname);
         }
       })
     }
@@ -65,6 +68,7 @@ instance.interceptors.response.use((response) => {
   }
   return Promise.reject(error)
 });
+
 
 // always ensure that we take the newest access_token when using axios/$http
 instance.interceptors.request.use((config) => {
