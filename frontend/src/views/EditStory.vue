@@ -90,23 +90,26 @@
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="photos">
-              <div class="card" style="z-index: 0;" v-for="photo in photos" :key="photo.url">
+      <div class="tile is-ancestor">
+        <div class="tile is-parent">
+          <div class="columns is-multiline">
+            <div class="column is-one-quarter" v-for="photo in photos">
+              <div class="card" style="z-index: 0;">
                 <div class="card-image">
-                  <figure class="image is-16by9">
-                    <img :src="photo.url" :alt="photo.originalName" />
+                  <figure class="image">
+                    <img :src="photo.url" />
                   </figure>
-                </div>
-                <div class="card-content">
-                  <p class="content is-small">{{ photo.originalName }}</p>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </div>
+
     </div>
 </div>
 </template>
@@ -115,8 +118,7 @@
 import MapIcon from '@/components/MapIcon.vue';
 
 // with thanks to https://github.com/chybie/file-upload-vue
-import { upload } from '@/services/file-upload.service';
-// import { wait } from '@/helpers';
+// import { upload } from '@/services/file-upload.service';
 
 const STATUS_INITIAL = 0;
 const STATUS_UPLOADING = 1;
@@ -132,8 +134,13 @@ export default {
       this.$http.get('stories/' + this.$route.params.id)
       .then(response => {
         this.story = response.data;
+        this.$http.get(this.story.content_url)
+          .then((response) => {
+            this.photos = response.data.medias;
+          })
       })
       .catch(error => {
+        console.log(error.response.status, error.response.data.msg);
       })
     }
   },
@@ -190,32 +197,38 @@ export default {
     },
     processFile(event) {
       this.photoCount = event.target.files.length;
-      const data = new FormData();
-
       if (!this.photoCount) { return; }
 
+      const medias = new FormData();
       Array
           .from(Array(this.photoCount).keys())
           .map((x) => {
-            data.append(event.target.name, event.target.files[x], event.target.files[x].name);
+            medias.append('medias', event.target.files[x]);
           });
 
-      this.uploading(data);
+      this.uploading(medias);
+      event.target.value = null; // needed to be able to upload same media multiple times
       if (event) { return event.preventDefault(); }
     },
-    uploading(data) {
+    uploading(medias) {
       this.currentStatus = STATUS_UPLOADING;
       this.isDragging = false;
 
-      // upload(data).then(wait(1000)).then((x) => {
-      upload(data).then((x) => {
-        this.photos = this.photos.concat(x);
-        this.currentStatus = STATUS_SUCCESS;
-      })
-      .catch((err) => {
-        this.error = err. response;
-        this.currentStatus = STATUS_ERROR;
-      });
+      this.$http.put(this.story.content_url, medias)
+        .then((response) => {
+          const { data: { medias } } = response;
+          this.currentStatus = STATUS_SUCCESS;
+
+          // var args = [this.photos.length, 0].concat(medias);
+          // Array.prototype.splice.apply(this.photos, args);
+          // console.log("photos processed", this.photos);
+          this.photos = this.photos.concat(medias);
+        })
+        .catch((error) => {
+          const { response: { status }, response: { data: { msg } } } = error;
+          console.log("upload error", status, msg);
+          this.currentStatus = STATUS_ERROR;
+        });
     },
   },
   computed: {

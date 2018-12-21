@@ -49,6 +49,7 @@ instance.interceptors.response.use((response) => {
         // console.log("refresh error", status, msg);
         if (status === 401) {
           localStorage.removeItem('user');
+          // TODO use this.$router to load route to not reload page completely
           location.reload();
         }
       })
