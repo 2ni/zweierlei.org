@@ -35,6 +35,7 @@ instance.interceptors.response.use((response) => {
     if (!isRefreshing && !originalRequest.__retried) {
       originalRequest.__retried = true;
       isRefreshing = true
+      console.log('refreshing token');
       const c = axios.create({baseURL: process.env.VUE_APP_API_URL, headers: {Authorization: 'Bearer ' + user.refresh_token}});
       c.post('refresh').then((r) => {
         // console.log('got new access_token'/*, r.data.access_token*/);

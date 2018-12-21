@@ -10,8 +10,8 @@ SADD z:allEmails test@zweierlei.org
 help ********Stories*********
 HMSET z:stories:a96970f1-fbaa-439c-892a-cec49ea6376d title "Some Title" description "Some text" activity utensils
 HMSET z:stories:3ee97c1f-21da-448f-ae95-e94f44f8825d title "Beeing a philosoph" description "... is like a flower in the prairie, a vessel in the wind, an elefant in the shower. Almost like stars in the sky." activity running
-HMSET z:stories:e3dc859d-77de-49d1-b630-5e174f21ae92 title "Schnapszahl" description "Viel Rummel um die Zahl 44, welche öfters vorkommt als gedacht." activity coffee
-HMSET z:stories:b4358909-3787-4b29-a859-273f86d0a89d title "Come get some" description "DukeNukum at its best. The game of the games!" activity coffee
+HMSET z:stories:e3dc859d-77de-49d1-b630-5e174f21ae92 title "Schnapszahl" description "Viel Rummel um die Zahl 44, welche öfters vorkommt als gedacht." activity camera
+HMSET z:stories:b4358909-3787-4b29-a859-273f86d0a89d title "Come get some" description "DukeNukum at its best. The game of the games!" activity camera
 HMSET z:stories:f66cce6d-619d-4500-996a-7ae9f443f8b3 title "Fasnacht" description "Im Muotatal gibt es die beste Zeit zum besten Zeitpunkt." activity utensils
 HMSET z:stories:27abf870-1ef9-4f56-bc0e-9083bc3e1238 title "Love is in the air" description "Do some peace and marry me!" activity running
 

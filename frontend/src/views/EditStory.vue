@@ -10,10 +10,7 @@
               <p class="card-header-title">Create a story</p>
             </header>
             <div class="card-content">
-              <p class="notification is-danger" v-show="isError">
-                <pre>Error! {{ this.error }}</pre>
-              </p>
-              <form enctype="multipart/form-data" novalidate v-if="isInitial || isUploading || isSuccess" @submit.prevent="processForm">
+              <form enctype="multipart/form-data" novalidate @submit.prevent="processSubmit">
                 <div class="field">
                   <p class="control has-icons-left has-icons-right">
                     <input
@@ -55,7 +52,7 @@
                     <div class="select" v-bind:class="{ 'is-danger': errors.has('activity') }">
                       <select v-validate="{ is_not: 'undefined' }" name="activity" v-model="story.activity">
                         <option disabled value="undefined">Activity</option>
-                        <option v-for="activity in activities" :value="activity">{{activity}}</option>
+                        <option v-for="activity in activities" :value="activity">{{ $t('activity_'+activity) }}</option>
                       </select>
                     </div>
                     <div v-for="activity in activities" v-show="story.activity == activity" class="icon is-small is-left"><i class="fas" :class="['fa-'+activity]"></i></div>
@@ -85,7 +82,10 @@
                 </div>
                 <div class="field">
                   <div class="control">
-                    <button class="button is-link">Save</button>
+                    <button class="button is-link" :disabled="isSaving">
+                      <span v-if="isUploading || isSaving" class="icon is-small"><i class="fas fa-sync-alt fa-spin"></i></span>
+                      <span>{{ saveText }}</span>
+                    </button>
                   </div>
                 </div>
               </form>
@@ -122,7 +122,7 @@ import MapIcon from '@/components/MapIcon.vue';
 
 const STATUS_INITIAL = 0;
 const STATUS_UPLOADING = 1;
-const STATUS_SUCCESS = 2;
+const STATUS_SAVING = 2;
 const STATUS_ERROR = 3;
 
 export default {
@@ -130,7 +130,7 @@ export default {
     MapIcon,
   },
   mounted() {
-    if (this.$route.params.id) {
+    if (!this.isNewStory) {
       this.$http.get('stories/' + this.$route.params.id)
       .then(response => {
         this.story = response.data;
@@ -146,25 +146,32 @@ export default {
   },
   data() {
     return {
-      activities: ['utensils', 'coffee', 'running'],
+      activities: ['utensils', 'camera', 'running'],
       story: {},
       photos: [],
+      photosToUpload: [],
       photoCount: null,
       currentStatus: STATUS_INITIAL,
-      error: null,
       isDragging: null,
-      showDropBox: true,
+      saveText: 'Save',
     };
   },
   methods: {
-    processForm(e) {
-      this.$http.post('stories' + (this.$route.params.id ? '/'+this.$route.params.id : ''), this.story)
+    processSubmit(e) {
+      this.currentStatus = STATUS_SAVING;
+      this.$http.post('stories' + (this.isNewStory ? '' : '/' + this.$route.params.id), this.story)
       .then(response => {
         const { data } = response;
-        this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
-        if (!this.$route.params.id) {
+        if (this.isNewStory) {
+          // upload attached medias after saving new story
+          const medias = this.createFormData(this.photosToUpload);
+          this.uploading(data.content_url, medias, true);
+
           // new entry -> redirect to detail page
           this.$router.push({name: 'EditStory', params: {'id': data.id}});
+        } else {
+          this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
+          this.currentStatus = STATUS_INITIAL;
         }
 
         // just set data from what we got
@@ -199,30 +206,58 @@ export default {
       this.photoCount = event.target.files.length;
       if (!this.photoCount) { return; }
 
+      // preview medias
+      for (let i = 0; i < this.photoCount; i++) {
+        let reader = new FileReader();
+        reader.addEventListener('load', function(e) {
+          // ensure reactivity
+          this.photos.push({url: e.target.result});
+          // var args = [this.photos.length, 0].concat({url: e.target.result});
+          // this.photos.splice.apply(this.photos, args);
+        }.bind(this), false);
+        reader.readAsDataURL(event.target.files[i]);
+      }
+
+      this.photosToUpload.push.apply(this.photosToUpload, event.target.files);
+
+      if (this.isNewStory) {
+        // upload files when saving
+        this.deemphasizeDropBox();
+      } else {
+        // upload files instantly
+        const medias = this.createFormData(this.photosToUpload);
+        this.uploading(this.story.content_url, medias);
+        event.target.value = null; // needed to be able to upload same media multiple times
+      }
+      if (event) { return event.preventDefault(); }
+    },
+    createFormData(files) {
       const medias = new FormData();
       Array
           .from(Array(this.photoCount).keys())
           .map((x) => {
-            medias.append('medias', event.target.files[x]);
+            medias.append('medias', files[x]);
           });
-
-      this.uploading(medias);
-      event.target.value = null; // needed to be able to upload same media multiple times
-      if (event) { return event.preventDefault(); }
+      return medias
     },
-    uploading(medias) {
-      this.currentStatus = STATUS_UPLOADING;
-      this.isDragging = false;
+    uploading(content_url, medias, newStory = false) {
+      if (!newStory) {
+        this.currentStatus = STATUS_UPLOADING;
+      }
 
-      this.$http.put(this.story.content_url, medias)
+      this.$http.put(content_url, medias)
         .then((response) => {
           const { data: { medias } } = response;
-          this.currentStatus = STATUS_SUCCESS;
+          this.currentStatus = STATUS_INITIAL;
+          this.deemphasizeDropBox();
+          if (newStory) {
+            this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
+          }
 
           // var args = [this.photos.length, 0].concat(medias);
           // Array.prototype.splice.apply(this.photos, args);
           // console.log("photos processed", this.photos);
-          this.photos = this.photos.concat(medias);
+          // this.photos = this.photos.concat(medias);
         })
         .catch((error) => {
           const { response: { status }, response: { data: { msg } } } = error;
@@ -232,17 +267,20 @@ export default {
     },
   },
   computed: {
+    isNewStory() {
+      return this.$route.params.id === undefined;
+    },
     isInitial() {
       return this.currentStatus === STATUS_INITIAL;
     },
     isUploading() {
       return this.currentStatus === STATUS_UPLOADING;
     },
+    isSaving() {
+      return this.currentStatus === STATUS_SAVING;
+    },
     isError() {
       return this.currentStatus === STATUS_ERROR;
-    },
-    isSuccess() {
-      return this.currentStatus === STATUS_SUCCESS;
     },
   },
 };

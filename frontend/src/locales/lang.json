@@ -5,7 +5,10 @@
       "hello": "Hallo"
     },
     "en": {
-      "hello": "Hello"
+      "hello": "Hello",
+      "activity_utensils": "Gastronomy",
+      "activity_camera": "Sightseeing",
+      "activity_running": "Outdooring"
     }
   }
 }

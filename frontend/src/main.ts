@@ -47,6 +47,7 @@ import {
   faTimes,
   faEnvelope,
   faLock,
+  faCamera,
 } from '@fortawesome/free-solid-svg-icons';
 library.add(
   faCoffee,
@@ -64,6 +65,7 @@ library.add(
   faTimes,
   faEnvelope,
   faLock,
+  faCamera,
 );
 // import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 // Vue.component('font-awesome-icon', FontAwesomeIcon);
