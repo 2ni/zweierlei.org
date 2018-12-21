@@ -72,6 +72,7 @@ class ApiMedias(ZweierleiResource):
                 verify = isinstance(data, dict) and data.get("msg")
                 if verify == "ok":
                     del data["msg"]
+                    data["url"] = mediaid2url(data["relative_url"])
                     medias.append(data)
 
         if not medias:

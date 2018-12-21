@@ -258,8 +258,8 @@ class Test(unittest.TestCase):
         # upload with gps image
         fns = []
         files = {
-            "test-withgps.jpg": "id,lat,lon,created,created_human,relative_url",
-            "test-withoutgps.jpg": "id,relative_url",
+            "test-withgps.jpg": "id,lat,lon,created,created_human,relative_url,url",
+            "test-withoutgps.jpg": "id,relative_url,url",
         }
         for name in files.keys():
             fns.append(open(os.path.join(self.dir, name), "rb"))

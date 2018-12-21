@@ -29,4 +29,5 @@ tests:
 	python tests.py -f $(test)
 
 populateDB:
-	cat redis.txt | redis-cli
+	@cat redis.txt | redis-cli
+	@rm -rf app/static/uploads
