@@ -1,3 +1,11 @@
+## Debug
+access vue via developer console:
+- click on Root in Vue extension 1st
+
+```
+$vm.<variable>
+```
+
 ## Resources
 - https://github.com/KoRiGaN/Vue2Leaflet
 - https://vuematerial.io

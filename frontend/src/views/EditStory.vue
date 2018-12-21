@@ -5,7 +5,7 @@
 
         <!-- drag & drop file upload -->
         <div class="tile is-parent">
-          <div class="tile is-child notification is-warning is-paddingless card">
+          <div class="tile is-8 is-child notification is-warning is-paddingless card">
             <header class="card-header">
               <p class="card-header-title">Create a story</p>
             </header>
@@ -91,6 +91,22 @@
               </form>
             </div>
           </div>
+
+          <div class="tile is-child">
+            <header class="card-header">
+              <p class="card-header-title">Meta information</p>
+            </header>
+            <div class="card-content">
+              <table class="table">
+                <tbody>
+                  <tr v-for="tag in storyExpose">
+                    <td>{{ tag }}</td><td>{{ story[tag] }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -134,6 +150,7 @@ export default {
       this.$http.get('stories/' + this.$route.params.id)
       .then((responseStories) => {
         this.story = responseStories.data;
+        console.log(this.story);
         this.$http.get(this.story.content_url)
           .then((responseContent) => {
             this.photos = responseContent.data.medias;
@@ -269,6 +286,12 @@ export default {
     },
   },
   computed: {
+    // TODO not reactive when adding image
+    storyExpose() {
+      return Object.keys(this.story).filter((key) => {
+        return ["created_human", "lat", "lon"].includes(key);
+      });
+    },
     isNewStory() {
       return this.$route.params.id === undefined;
     },

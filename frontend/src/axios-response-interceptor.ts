@@ -15,11 +15,11 @@ let isRefreshing = false;
 let subscribers = [];
 
 function onAccessTokenFetched(accessToken) {
-  subscribers = subscribers.filter((callback) => callback(accessToken));
+  subscribers = (subscribers as any).filter((callback) => callback(accessToken));
 }
 
 function addSubscriber(callback) {
-  subscribers.push(callback);
+  (subscribers as any).push(callback);
 }
 
 instance.interceptors.response.use((response) => {
