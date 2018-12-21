@@ -1,8 +1,12 @@
-// utils to delay promise
+/*
+ * usage
+ * .then(wait(1000)).then(...)
+ *
+ */
 function wait(ms) {
-    return (x) => {
-        return new Promise((resolve) => setTimeout(() => resolve(x), ms));
-    };
+  return (x) => {
+    return new Promise((resolve) => setTimeout(() => resolve(x), ms));
+  };
 }
 
 /*
@@ -12,10 +16,8 @@ function wait(ms) {
  * });
  *
  */
-function delay(ms, f) {
-  return new Promise(function(resolve) {
-    setTimeout(resolve.bind(null, f), ms)
-  });
+function delay(ms) {
+  return new Promise((resolve) => { setTimeout(resolve, ms); });
 }
 
 export { wait, delay };

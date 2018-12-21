@@ -1,8 +1,8 @@
 import { userService } from '@/services';
 import router from '@/router';
 
-const user = JSON.parse((localStorage as any).getItem('user'));
-const initialState = user ? { status: 'loggedIn', user } : { status: null, user: null };
+const userObject = JSON.parse((localStorage as any).getItem('user'));
+const initialState = userObject ? { status: 'loggedIn', userObject } : { status: null, userObject: null };
 
 export const authentication = {
     namespaced: true,

@@ -9,21 +9,21 @@ import Vue from 'vue';
 import axios from 'axios';
 import router from './router';
 
-const instance = axios.create({baseURL: process.env.VUE_APP_API_URL});
+const instance = axios.create({ baseURL: process.env.VUE_APP_API_URL });
 
-let isRefreshing = false
-let subscribers = []
+let isRefreshing = false;
+let subscribers = [];
 
-function onAccessTokenFetched(access_token) {
-  subscribers = subscribers.filter(callback => callback(access_token))
+function onAccessTokenFetched(accessToken) {
+  subscribers = subscribers.filter((callback) => callback(accessToken));
 }
 
 function addSubscriber(callback) {
-  subscribers.push(callback)
+  subscribers.push(callback);
 }
 
 instance.interceptors.response.use((response) => {
-  return response
+  return response;
 }, (error) => {
   // console.log(error.response.status, error.response.data.msg);
   const { config, response: { status } } = error;
@@ -34,40 +34,43 @@ instance.interceptors.response.use((response) => {
   if (status === 401) {
     if (!isRefreshing && !originalRequest.__retried) {
       originalRequest.__retried = true;
-      isRefreshing = true
+      isRefreshing = true;
       console.log('refreshing token');
-      const c = axios.create({baseURL: process.env.VUE_APP_API_URL, headers: {Authorization: 'Bearer ' + user.refresh_token}});
+      const c = axios.create({
+        baseURL: process.env.VUE_APP_API_URL,
+        headers: { Authorization: 'Bearer ' + user.refresh_token },
+      });
       c.post('refresh').then((r) => {
         // console.log('got new access_token'/*, r.data.access_token*/);
         user.access_token = r.data.access_token;
         localStorage.setItem('user', JSON.stringify(user));
-        isRefreshing = false
-        onAccessTokenFetched(r.data.access_token)
+        isRefreshing = false;
+        onAccessTokenFetched(r.data.access_token);
       })
-      .catch((error) => {
+      .catch((responseErrorRefresh) => {
         // refresh has expired -> redirect to login
-        // console.log(error.response.status, error.response.data.msg);
-        const { response: { status }, response: { data: { msg } } } = error;
-        // console.log("refresh error", status, msg);
-        if (status === 401) {
+        // console.log(responseErrorRefresh.response.status, responseErrorRefresh.response.data.msg);
+        const { response: { errorRefresh }, response: { data: { msg } } } = responseErrorRefresh;
+        // console.log("refresh error", errorRefresh, msg);
+        if (errorRefresh === 401) {
           localStorage.removeItem('user');
           // use route to load login form to not reload page completely
           // location.reload();
-          let lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
+          const lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
           router.push('/' + lang + '/login?f=' + window.location.pathname);
         }
-      })
+      });
     }
 
     const retryOriginalRequest = new Promise((resolve) => {
-      addSubscriber(access_token => {
-        // originalRequest.headers.Authorization = 'Bearer ' + access_token
-        resolve(instance(originalRequest))
-      })
-    })
-    return retryOriginalRequest
+      addSubscriber((accessToken) => {
+        // originalRequest.headers.Authorization = 'Bearer ' + accessToken
+        resolve(instance(originalRequest));
+      });
+    });
+    return retryOriginalRequest;
   }
-  return Promise.reject(error)
+  return Promise.reject(error);
 });
 
 

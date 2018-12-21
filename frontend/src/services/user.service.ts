@@ -14,9 +14,9 @@ export const userService = {
 
 function login(user: any) {
   return axios({url: 'login', baseURL: process.env.VUE_APP_API_URL, method: 'POST', data: user})
-    .then((user) => {
-      if (user.data.msg == 'ok') {
-        localStorage.setItem('user', JSON.stringify(user.data));
+    .then((responseUser) => {
+      if (responseUser.data.msg === 'ok') {
+        localStorage.setItem('user', JSON.stringify(responseUser.data));
       }
     })
     .catch((error) => {

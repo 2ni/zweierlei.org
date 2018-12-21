@@ -67,7 +67,7 @@ export default {
       const { email, password } = this;
       const { dispatch } = this.$store;
       if (email && password) {
-        dispatch('authentication/login', { "email": email, "password": password }).then(
+        dispatch('authentication/login', { email, password }).then(
           (user) => {
             const f = this.$route.query.f;
             this.$router.push(f ? f : '/' + this.$route.params.locale);

@@ -49,29 +49,29 @@ export default {
   },
   mounted() {
     (this as any).$http.get('stories')
-      .then(response => {
-        (this as any).stories = response.data;
-        for (let i = 0; i<(this as any).stories.length; i++) {
+      .then((responseStories) => {
+        (this as any).stories = responseStories.data;
+        for (let i = 0; i < (this as any).stories.length; i++) {
           (this as any).$http.get((this as any).stories[i].content_url)
-            .then(response => {
-              if (response.data.medias[0]) {
-                Vue.set((this as any).medias, i, response.data.medias[0].url);
+            .then((responseContent) => {
+              if (responseContent.data.medias[0]) {
+                Vue.set((this as any).medias, i, responseContent.data.medias[0].url);
               }
-            })
+            });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         (this as any).errored = true;
         console.log(error);
       })
-      .finally(() => (this as any).loading = false)
+      .finally(() => (this as any).loading = false);
   },
   data() {
     return {
       stories: null,
       medias: {},
       loading: true,
-      errored: false
+      errored: false,
     };
   },
 };

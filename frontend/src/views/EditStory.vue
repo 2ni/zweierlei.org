@@ -132,16 +132,16 @@ export default {
   mounted() {
     if (!this.isNewStory) {
       this.$http.get('stories/' + this.$route.params.id)
-      .then(response => {
-        this.story = response.data;
+      .then((responseStories) => {
+        this.story = responseStories.data;
         this.$http.get(this.story.content_url)
-          .then((response) => {
-            this.photos = response.data.medias;
-          })
+          .then((responseContent) => {
+            this.photos = responseContent.data.medias;
+          });
       })
-      .catch(error => {
+      .catch((error) => {
         console.log(error.response.status, error.response.data.msg);
-      })
+      });
     }
   },
   data() {
@@ -160,7 +160,7 @@ export default {
     processSubmit(e) {
       this.currentStatus = STATUS_SAVING;
       this.$http.post('stories' + (this.isNewStory ? '' : '/' + this.$route.params.id), this.story)
-      .then(response => {
+      .then((response) => {
         const { data } = response;
         if (this.isNewStory) {
           // upload attached medias after saving new story
@@ -168,7 +168,7 @@ export default {
           this.uploading(data.content_url, medias, true);
 
           // new entry -> redirect to detail page
-          this.$router.push({name: 'EditStory', params: {'id': data.id}});
+          this.$router.push({name: 'EditStory', params: {id: data.id}});
         } else {
           this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
           this.currentStatus = STATUS_INITIAL;
@@ -177,24 +177,26 @@ export default {
         // just set data from what we got
         this.story = data;
       })
-      .catch(error => {
+      .catch((error) => {
         const { response: { status }, response: { data: { msg } } } = error;
         if (status === 422) {
           // set errors returned from backend
           // https://github.com/baianat/vee-validate/issues/1153
           console.log(status, msg);
-          for (var element in msg) {
-            let field = this.$validator.fields.find({name: element});
-            field.setFlags({invalid: true});
-            this.errors.add({
-              field: field.name,
-              msg: msg[element],
-              id: field.id,
-              scope: field.scope,
-            });
+          for (const element in msg) {
+            if (msg.hasOwnProperty(element)) {
+              const field = this.$validator.fields.find({name: element});
+              field.setFlags({invalid: true});
+              this.errors.add({
+                field: field.name,
+                msg: msg[element],
+                id: field.id,
+                scope: field.scope,
+              });
+            }
           }
         }
-      })
+      });
     },
     emphasizeDropBox() {
       this.isDragging = true;
@@ -208,7 +210,7 @@ export default {
 
       // preview medias
       for (let i = 0; i < this.photoCount; i++) {
-        let reader = new FileReader();
+        const reader = new FileReader();
         reader.addEventListener('load', function(e) {
           // ensure reactivity
           this.photos.push({url: e.target.result});
@@ -238,30 +240,30 @@ export default {
           .map((x) => {
             medias.append('medias', files[x]);
           });
-      return medias
+      return medias;
     },
-    uploading(content_url, medias, newStory = false) {
+    uploading(contentUrl, medias, newStory = false) {
       if (!newStory) {
         this.currentStatus = STATUS_UPLOADING;
       }
 
-      this.$http.put(content_url, medias)
+      this.$http.put(contentUrl, medias)
         .then((response) => {
-          const { data: { medias } } = response;
           this.currentStatus = STATUS_INITIAL;
           this.deemphasizeDropBox();
           if (newStory) {
             this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
           }
 
-          // var args = [this.photos.length, 0].concat(medias);
+          // const { data: { responseMedias } } = response;
+          // var args = [this.photos.length, 0].concat(responseMedias);
           // Array.prototype.splice.apply(this.photos, args);
           // console.log("photos processed", this.photos);
-          // this.photos = this.photos.concat(medias);
+          // this.photos = this.photos.concat(responseMedias);
         })
         .catch((error) => {
           const { response: { status }, response: { data: { msg } } } = error;
-          console.log("upload error", status, msg);
+          console.log('upload error', status, msg);
           this.currentStatus = STATUS_ERROR;
         });
     },
