@@ -39,7 +39,7 @@ export default {
   methods: {
     changeLang(lang, event) {
       this.$i18n.locale = lang;
-      const path = this.$route.fullPath.replace(/^\/[^\|]*\//, '');
+      const path = this.$route.fullPath.replace(/^\/[^\/]*\//, '');
       this.$router.push('/' + lang + '/' + path);
       if (event) {
         event.preventDefault();
