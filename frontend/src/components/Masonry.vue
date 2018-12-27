@@ -1,11 +1,12 @@
 <template>
+  <div{{ width }}</div>
   <div v-if="medias" class="tile is-ancestor">
     <div class="tile is-parent">
       <div class="tile is-child box has-background-grey-darker">
-        <div class="masonry">
+        <div class="masonry" ref="masonry">
           <div class="masonryItem" v-for="media in medias">
             <figure class="image">
-              <img :src="media.url">
+              <img :src="media.url | resize('360')">
             </figure>
           </div>
         </div>
@@ -15,11 +16,40 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
 
-@Component
-export default class Masonry extends Vue {
-  @Prop() private medias!: Array;
+export default {
+  props: [ 'medias' ],
+  filters: {
+    resize(value, size='orig') {
+      return value.replace(/orig/g, size);
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.resized);
+    });
+  },
+  methods: {
+    resized(event) {
+      const el = this.$refs.masonry.querySelector('img');
+      const newWidth = el.clientWidth;
+      if (this.width !== newWidth) {
+        console.log('resized', this.$refs.masonry.clientWidth, el.clientWidth);
+        this.width = el.clientWidth;
+      }
+    },
+    calculateWidth() {
+      this.width = this.$refs.masonry[0].querySelector('img').clientWidth;
+    },
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.resized);
+  },
+  data() {
+    return {
+      width: 0,
+    };
+  },
 }
 </script>
 
@@ -27,6 +57,20 @@ export default class Masonry extends Vue {
 .masonry {
   columns: 4;
   column-gap: 1em;
+}
+
+@media (max-width: 768px) {
+  .masonry {
+    columns: 1;
+    columng-gap: 1em;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .masonry {
+    columns: 2;
+    columng-gap: 1em;
+  }
 }
 
 .masonryItem {
