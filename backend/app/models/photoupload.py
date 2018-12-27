@@ -131,7 +131,7 @@ class Photoupload:
         for desc, size in sizes.items():
             thumb = copy.copy(self._img)
             thumb.thumbnail((size, size*2), PIL.Image.ANTIALIAS)
-            thumb.convert("RGB").save(os.path.join(destdir, "{id}.{size}.jpg".format(id=id, size=size)))
+            thumb.convert("RGB").save(os.path.join(destdir, "{id}.{size}.{ending}".format(id=id, size=size, ending=ending)))
 
 
         if os.path.isfile(dest):
