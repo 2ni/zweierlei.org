@@ -15,6 +15,8 @@ from datetime import datetime as dt
 
 from app.decorators import jwt_required_consume_attach
 
+from .stories import ApiStories
+
 class ApiMedias(ZweierleiResource):
     """
     http -F GET :5000/api/v01/stories/a96970f1-fbaa-439c-892a-cec49ea6376d/medias
@@ -82,7 +84,8 @@ class ApiMedias(ZweierleiResource):
         ret = db.appendMediasToStory(args=["uid", uid, "id", id, "medias", json.dumps(medias)]).lower()
         if ret == "ok":
             # TODO generate smaller files in task queue (flask-rq2)
-            return jsonify({"msg": "ok", "medias": medias})
+            story = ApiStories._get_story(id)
+            return jsonify({"msg": "ok", "medias": medias, "story": story})
         else:
             for media in medias:
                 file = os.path.join(current_app.config.get("UPLOAD_FOLDER"), media["url"])

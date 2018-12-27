@@ -8,7 +8,8 @@ import Form from './views/Form.vue';
 import Bulma from './views/Bulma.vue';
 import Base from './views/Base.vue';
 import EditStory from './views/EditStory.vue';
-import PageNotFound from './views/PageNotFound.vue';
+import Story from './views/Story.vue';
+import NotFound from './components/NotFound.vue';
 
 import { defaultLocale } from './locales/lang.json';
 
@@ -55,7 +56,11 @@ export default new Router({
           name: 'Home',
           component: Home,
         },
-
+        {
+          path: 'story/:id',
+          name: 'Story',
+          component: Story,
+        },
         {
           path: 'about',
           name: 'About',
@@ -91,7 +96,7 @@ export default new Router({
         {
           path: '*',
           name: 'Notfound',
-          component: PageNotFound,
+          component: NotFound,
         },
       ],
     },

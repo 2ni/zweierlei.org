@@ -285,6 +285,11 @@ class Test(unittest.TestCase):
 
 
         # after 1st media upload story should have created, lat, lon from that media
+        # story should be returned with updated data
+        self.assertEqual(uploaded_medias["story"]["created"], "1540019730")
+        self.assertEqual(uploaded_medias["story"]["created_human"], "2018-10-20 07:15:30")
+
+        # re-load an verify if data correct
         resp, data = self.call("get", storyurl)
         self.assertEqual(data["created"], "1540019730")
         self.assertEqual(data["created_human"], "2018-10-20 07:15:30")

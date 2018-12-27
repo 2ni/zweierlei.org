@@ -221,10 +221,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 1em 0;
-}
-
 .tile.is-child {
   margin: 0 .5em;
 }

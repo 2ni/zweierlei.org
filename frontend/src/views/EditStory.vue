@@ -1,6 +1,10 @@
 <template>
   <div class="container" @dragenter="emphasizeDropBox" @mouseout="deemphasizeDropBox">
 
+    <NotFound v-if="idNotFound" />
+
+    <template v-else>
+
       <div class="tile is-ancestor">
 
         <!-- drag & drop file upload -->
@@ -99,7 +103,7 @@
             <div class="card-content">
               <table class="table">
                 <tbody>
-                  <tr v-for="tag in storyExpose">
+                  <tr v-for="tag in storyExpose" :key="story[tag]">
                     <td>{{ tag }}</td><td>{{ story[tag] }}</td>
                   </tr>
                 </tbody>
@@ -110,28 +114,19 @@
         </div>
       </div>
 
-      <div class="tile is-ancestor">
-        <div class="tile is-parent">
-          <div class="columns is-multiline">
-            <div class="column is-one-quarter" v-for="photo in photos">
-              <div class="card" style="z-index: 0;">
-                <div class="card-image">
-                  <figure class="image">
-                    <img :src="photo.url" />
-                  </figure>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Masonry :medias="photos" />
 
-    </div>
-</div>
+    </template>
+
+  </div>
 </template>
 
 <script type="ts">
+import NotFound from '@/components/NotFound.vue';
 import MapIcon from '@/components/MapIcon.vue';
+import Masonry from '@/components/Masonry.vue';
+
+import { storyService } from '@/services';
 
 // with thanks to https://github.com/chybie/file-upload-vue
 // import { upload } from '@/services/file-upload.service';
@@ -143,22 +138,25 @@ const STATUS_ERROR = 3;
 
 export default {
   components: {
+    NotFound,
     MapIcon,
+    Masonry,
   },
   mounted() {
     if (!this.isNewStory) {
-      this.$http.get('stories/' + this.$route.params.id)
-      .then((responseStories) => {
-        this.story = responseStories.data;
-        console.log(this.story);
-        this.$http.get(this.story.content_url)
-          .then((responseContent) => {
-            this.photos = responseContent.data.medias;
-          });
-      })
-      .catch((error) => {
-        console.log(error.response.status, error.response.data.msg);
-      });
+      storyService.get(this.$route.params.id)
+        .then((responseGet) => {
+          this.story = responseGet.data;
+          this.photos = responseGet.data.medias;
+        })
+        .catch((errorGet) => {
+          const { response: { status }, response: { data: { msg } } } = errorGet;
+          if (status === 404) {
+            this.idNotFound = true;
+          } else {
+            console.log(status, msg);
+          }
+        });
     }
   },
   data() {
@@ -171,6 +169,7 @@ export default {
       currentStatus: STATUS_INITIAL,
       isDragging: null,
       saveText: 'Save',
+      idNotFound: false,
     };
   },
   methods: {
@@ -181,8 +180,12 @@ export default {
         const { data } = response;
         if (this.isNewStory) {
           // upload attached medias after saving new story
-          const medias = this.createFormData(this.photosToUpload);
-          this.uploading(data.content_url, medias, true);
+          if (this.photosToUpload.length) {
+            const medias = this.createFormData(this.photosToUpload);
+            this.uploading(data.content_url, medias, true);
+          } else {
+            this.currentStatus = STATUS_INITIAL;
+          }
 
           // new entry -> redirect to detail page
           this.$router.push({name: 'EditStory', params: {id: data.id}});
@@ -240,7 +243,7 @@ export default {
       this.photosToUpload.push.apply(this.photosToUpload, event.target.files);
 
       if (this.isNewStory) {
-        // upload files when saving
+        // upload files after saving data
         this.deemphasizeDropBox();
       } else {
         // upload files instantly
@@ -271,6 +274,8 @@ export default {
           if (newStory) {
             this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
           }
+          this.photosToUpload = [];
+          this.story = response.data.story;
 
           // const { data: { responseMedias } } = response;
           // var args = [this.photos.length, 0].concat(responseMedias);
@@ -286,10 +291,9 @@ export default {
     },
   },
   computed: {
-    // TODO not reactive when adding image
     storyExpose() {
       return Object.keys(this.story).filter((key) => {
-        return ["created_human", "lat", "lon"].includes(key);
+        return ['created_human', 'lat', 'lon'].includes(key);
       });
     },
     isNewStory() {
@@ -312,10 +316,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 1em 0;
-}
-
 .tile.is-child {
   margin: 0 .5em;
 }

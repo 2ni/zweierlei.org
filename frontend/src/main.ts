@@ -6,7 +6,9 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import './registerServiceWorker';
-import './axios-response-interceptor';
+import { http } from '@/services';
+
+Vue.prototype.$http = http;
 
 /*
 import { fakeBackend } from './helpers';

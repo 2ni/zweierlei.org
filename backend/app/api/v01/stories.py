@@ -24,9 +24,7 @@ class ApiStories(ZweierleiResource):
 
     def get(self, id=None):
         if id:
-            createdvalue = db.zscore("z:stories:index:created", id)
-            created = str(round(createdvalue)) if createdvalue else None
-            story = self._get_story(id, created)
+            story = ApiStories._get_story(id)
             if story:
                 return jsonify(story)
             else:
@@ -37,7 +35,7 @@ class ApiStories(ZweierleiResource):
             latestIds = db.zrevrangebyscore("z:stories:index:created", "inf", 0, 0, current_app.config.get("NUM_STORIES"), True)
             stories = []
             for (id, created) in latestIds:
-                story = self._get_story(id, created)
+                story = ApiStories._get_story(id, created)
                 if story:
                     stories.append(story)
 
@@ -72,7 +70,7 @@ class ApiStories(ZweierleiResource):
         if ret == "ok":
             return jsonify(merge_dict(dataToSave, {
                 "msg": "ok",
-                "content_url": self._get_content_url(dataToSave["id"])
+                "content_url": ApiStories._get_content_url(dataToSave["id"])
             }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"
@@ -85,7 +83,8 @@ class ApiStories(ZweierleiResource):
         """
         return self.response("not implemented")
 
-    def _get_content_url(self, id):
+    @staticmethod
+    def _get_content_url(id):
         """
         get content url to upload media to
         """
@@ -99,7 +98,8 @@ class ApiStories(ZweierleiResource):
             id=id
         )
 
-    def _get_story(self, id, created):
+    @staticmethod
+    def _get_story(id, created=None):
         """
         get all necessary data for a story from db
         """
@@ -107,10 +107,14 @@ class ApiStories(ZweierleiResource):
         if not story:
             return None
 
+        if not created:
+            createdvalue = db.zscore("z:stories:index:created", id)
+            created = str(round(createdvalue)) if createdvalue else None
+
         story["id"] = id
         story["created"] = created
         story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
-        story["content_url"] = self._get_content_url(id)
+        story["content_url"] = ApiStories._get_content_url(id)
 
         location = db.geopos("z:stories:position", id)[0]
         if location:

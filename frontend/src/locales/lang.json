@@ -2,7 +2,10 @@
   "defaultLocale": "en",
   "messages": {
     "de": {
-      "hello": "Hallo"
+      "hello": "Hallo",
+      "activity_utensils": "Gastronomie",
+      "activity_camera": "Besichtigung",
+      "activity_running": "Natur"
     },
     "en": {
       "hello": "Hello",

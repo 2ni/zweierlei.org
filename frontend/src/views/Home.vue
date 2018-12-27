@@ -78,9 +78,6 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 1em 0;
-}
 .card-header {
   position: absolute;
   top: 0;
