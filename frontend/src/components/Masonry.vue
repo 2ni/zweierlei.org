@@ -6,7 +6,7 @@
         <div class="masonry" ref="masonry">
           <div class="masonryItem" v-for="media in medias">
             <figure class="image">
-              <img :src="media.url | resize('360')">
+              <img :src="media.url | imageSize('360')">
             </figure>
           </div>
         </div>
@@ -19,11 +19,6 @@
 
 export default {
   props: [ 'medias' ],
-  filters: {
-    resize(value, size='orig') {
-      return value.replace(/orig/g, size);
-    },
-  },
   mounted() {
     this.$nextTick(() => {
       window.addEventListener('resize', this.resized);
@@ -50,7 +45,7 @@ export default {
       width: 0,
     };
   },
-}
+};
 </script>
 
 <style scoped>

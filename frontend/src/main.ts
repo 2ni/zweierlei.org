@@ -7,6 +7,7 @@ import router from './router';
 import store from './store';
 import './registerServiceWorker';
 import { http } from '@/services';
+import './filters';
 
 Vue.prototype.$http = http;
 
