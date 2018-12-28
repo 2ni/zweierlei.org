@@ -1,7 +1,13 @@
 <template>
   <div class="container">
     <div class="navbar-brand">
-      <router-link class="navbar-item" :to="'/'+$i18n.locale+'/home'">zweierlei.org</router-link><span class="navbar-item">{{ helloUser() }}</span>
+      <router-link class="navbar-item" :to="$localize('home')">zweierlei.org</router-link>
+      <span class="navbar-item">
+        <span>{{ helloUser() }}</span>&nbsp;|&nbsp;
+        <router-link :to="$localize('login?f='+$route.fullPath)">
+          {{ isLoggedIn ? 'Logout' : 'Login'}}
+        </router-link>
+      </span>
       <span class="navbar-burger burger" data-target="navbarMenu" @click="showNav = !showNav" :class="{ 'is-active': showNav }">
         <span></span>
         <span></span>
@@ -15,18 +21,17 @@
           v-for="navItem in navItems"
           class="navbar-item"
           v-bind:class="$route.name == navItem.name ? 'is-active' : ''"
-          :to="'/'+$i18n.locale+'/'+navItem.path">
+          :to="$localize(navItem.path)">
           {{ navItem.path === 'login' && isLoggedIn ? 'Logout' : navItem.name }}
         </router-link>
         <ul class="navbar-item">
           <li v-for="(v,lang) in this.$i18n.messages">
-            <a
-              v-if="lang != $i18n.locale"
-              :href="'/' + lang + $route.fullPath.replace(/^\/[^\/]*/, '')"
+            <a v-if="lang != $i18n.locale"
+              :href="$localize($route.fullPath.replace(/^\/[^\/]*/, ''), lang)"
               v-on:click="changeLang(lang, $event)">
               {{ lang }}
             </a>
-            <span v-if="lang == $i18n.locale">{{ lang }}</span>
+            <span v-else>{{ lang }}</span>
           </li>
         </ul>
       </div>
@@ -40,7 +45,7 @@ export default {
     changeLang(lang, event) {
       this.$i18n.locale = lang;
       const path = this.$route.fullPath.replace(/^\/[^\/]*\//, '');
-      this.$router.push('/' + lang + '/' + path);
+      this.$router.push(this.$localize(path));
       if (event) {
         event.preventDefault();
       }
@@ -68,7 +73,7 @@ export default {
     this.$router.options.routes.forEach((elem) => {
       if (elem.children) {
         elem.children.forEach((child) => {
-          if (child.path !== '*' && child.name) {
+          if (child.meta && child.meta.showHeader) {
             this.navItems.push({path: child.path, name: child.name});
           }
         });

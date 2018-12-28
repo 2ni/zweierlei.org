@@ -1,6 +1,6 @@
 <template>
   <div{{ width }}</div>
-  <div v-if="medias" class="tile is-ancestor">
+  <div v-if="medias.length" class="tile is-ancestor">
     <div class="tile is-parent">
       <div class="tile is-child box has-background-grey-darker">
         <div class="masonry" ref="masonry">

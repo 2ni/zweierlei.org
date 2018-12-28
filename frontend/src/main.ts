@@ -8,6 +8,8 @@ import store from './store';
 import './registerServiceWorker';
 import { http } from '@/services';
 import './filters';
+import { localize } from '@/mixins';
+Vue.mixin(localize);
 
 Vue.prototype.$http = http;
 
