@@ -35,6 +35,7 @@ import 'bulma/css/bulma.css';
 import { library, dom } from '@fortawesome/fontawesome-svg-core';
 dom.watch(); // be able to use <i class="fas fa-coffee"></i>
 import {
+  faEdit,
   faCoffee,
   faSyncAlt,
   faToggleOn,
@@ -53,6 +54,7 @@ import {
   faCamera,
 } from '@fortawesome/free-solid-svg-icons';
 library.add(
+  faEdit,
   faCoffee,
   faSyncAlt,
   faToggleOn,

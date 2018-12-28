@@ -1,2 +1,3 @@
 *.swp
 static/
+.DS_Store

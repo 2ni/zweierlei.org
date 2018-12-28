@@ -93,11 +93,11 @@ class Test(unittest.TestCase):
 
 
     @staticmethod
-    def api(endpoint):
+    def api(endpoint, relative=False):
         if isinstance(endpoint, list):
             endpoint = "/".join(endpoint)
 
-        return "/api/v01/" + endpoint
+        return ("/" if relative else "/api/v01/")  + endpoint
 
 
 ##### Tests start here #####
@@ -203,10 +203,23 @@ class Test(unittest.TestCase):
         resp, data = self.call("get", self.api(["stories", self.storyid]))
         self.assertEqual(resp.status_code, 200)
         self.assertEqual(data["created_human"], "2017-12-24 17:30:00")
-        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,content_url,lat,lon,activity"), [])
+        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,detail_url,content_url,lat,lon,activity"), [])
         for k,v in {"lon": "8.5336", "lat": "47.3608", "created": "1514136600"}.items():
             self.assertEqual(data[k], v)
 
+        # verify edit_url if logged in
+        user = self.login()
+        resp, data = self.callWithToken("get", self.api(["stories", self.storyid]), user["access_token"])
+        self.assertEqual(diff_dict(data, "created,created_human,description,title,id,detail_url,content_url,edit_url,lat,lon,activity"), [])
+
+        # verify if returned edit_url matches our api url
+        self.assertEqual(
+            "{apiurl}".format(
+                apiurl=self.api(["edit", "story", data["id"]], True)
+            ),
+            data["edit_url"])
+
+        # verify non existent story
         resp, data = self.call("get", self.api(["stories", str(uuid.uuid4())]))
         self.assertEqual(resp.status_code, 404)
         self.assertEqual(data["msg"], "not found")
@@ -217,7 +230,7 @@ class Test(unittest.TestCase):
         assert len(stories) > 0
         assert len(stories) <= 3
         for story in stories:
-            self.assertEqual(diff_dict(story, "created,created_human,description,title,id,content_url,lat,lon,activity"), [])
+            self.assertEqual(diff_dict(story, "created,created_human,description,title,id,detail_url,content_url,lat,lon,activity"), [])
             if lastcreated:
                 assert lastcreated >= story["created"]
 
@@ -232,7 +245,7 @@ class Test(unittest.TestCase):
         # create story
         resp, data = self.callWithToken("post", self.api("stories"), user["access_token"], {"title": "Fancy thing", "description": "hahaha", "activity": "utensils"})
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,content_url, activity"), [])
+        self.assertEqual(diff_dict(data, "created,description,id,msg,title,created_human,detail_url,edit_url,content_url, activity"), [])
 
         # verify if returned content_url matches our api url
         self.assertEqual(

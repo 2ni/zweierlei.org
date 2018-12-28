@@ -10,15 +10,18 @@
       <div v-else class="column is-one-third" v-for="(story, i) in stories">
 
         <div class="card">
-          <div class="card-image">
-            <figure class="image is-4by3">
-              <img :src="medias[i] ? medias[i] : 'https://bulma.io/images/placeholders/1280x960.png'" :title="story.title">
-            </figure>
-            <pre class="content is-small">{{ story }} {{ medias[i] }}</pre>
-          </div>
+          <router-link :to="'/'+$i18n.locale+story.detail_url">
+            <div class="card-image">
+              <figure class="image">
+                <img v-if="medias[i]" :src="medias[i] | imageSize('360')" :title="story.title">
+                <img v-else src="https://bulma.io/images/placeholders/1280x960.png" :title="story.title">
+              </figure>
+              <!-- <pre class="content is-small">{{ story }} {{ medias[i] }}</pre> -->
+            </div>
+          </router-link>
           <div class="card-header">
             <p class="card-header-title has-background-dark has-text-white"><MapIcon :type="story.activity" />
-              <router-link :to="'/'+$i18n.locale+'/edit/story/'+story.id">{{ story.title }}</router-link>
+              {{ story.title }}
             </p>
           </div>
           <div class="card-content">
@@ -83,5 +86,25 @@ export default {
   top: 0;
   width: 100%;
   opacity: .8;
+}
+
+.card-content .content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+   -webkit-box-orient: vertical;
+   -webkit-line-clamp: 3; /* number of lines to show */
+   line-height: 18px;        /* fallback */
+   max-height: 54px;
+}
+
+.card {
+  height: 300px;
+  overflow: hidden;
+}
+
+.card-image {
+  height: 200px;
+  overflow: hidden;
 }
 </style>

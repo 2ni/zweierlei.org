@@ -3,7 +3,7 @@
 import uuid, json, os, re
 
 from flask import jsonify, request, url_for, current_app
-from flask_jwt_extended import (get_jwt_identity, jwt_required)
+from flask_jwt_extended import (get_jwt_identity, jwt_required, jwt_optional)
 from werkzeug.utils import secure_filename
 
 from app import db
@@ -22,6 +22,7 @@ class ApiStories(ZweierleiResource):
     endpoint_url = ["/stories", "/stories/<id>"]
     exposed_fields = ["title", "description", "activity"]
 
+    @jwt_optional
     def get(self, id=None):
         if id:
             story = ApiStories._get_story(id)
@@ -70,7 +71,9 @@ class ApiStories(ZweierleiResource):
         if ret == "ok":
             return jsonify(merge_dict(dataToSave, {
                 "msg": "ok",
-                "content_url": ApiStories._get_content_url(dataToSave["id"])
+                "content_url": ApiStories._get_content_url(dataToSave["id"]),
+                "detail_url": ApiStories._get_detail_url(id),
+                "edit_url": ApiStories._get_edit_url(id)
             }))
         else:
             # eg "required element:uid,description" -> call as "required element", "uid,description"
@@ -88,14 +91,33 @@ class ApiStories(ZweierleiResource):
         """
         get content url to upload media to
         """
+        baseurl = ApiStories._construct_base_url()
+
+        return "{baseurl}/stories/{id}/medias".format(
+            baseurl=baseurl,
+            id=id
+        )
+
+    @staticmethod
+    def _get_detail_url(id):
+        return "/story/{id}".format(id=id)
+
+    def _get_edit_url(id):
+        if db.zscore("z:storiesByUser:{uid}".format(uid=get_jwt_identity()), id) != None:
+            return "/edit/story/{id}".format(id=id)
+        else:
+            return None
+
+
+    @staticmethod
+    def _construct_base_url():
         curdir = os.path.dirname(os.path.realpath(__file__))
         apiurl = re.sub("^.*(/api.*)", r"\1", curdir)
         baseurl = current_app.config.get("BASE_URL")
 
-        return "{baseurl}{apiurl}/stories/{id}/medias".format(
+        return "{baseurl}{apiurl}".format(
             baseurl=baseurl,
-            apiurl=apiurl,
-            id=id
+            apiurl=apiurl
         )
 
     @staticmethod
@@ -115,6 +137,11 @@ class ApiStories(ZweierleiResource):
         story["created"] = created
         story["created_human"] = dt.utcfromtimestamp(int(story["created"])).strftime('%Y-%m-%d %H:%M:%S')
         story["content_url"] = ApiStories._get_content_url(id)
+        story["detail_url"] = ApiStories._get_detail_url(id)
+
+        edit_url = ApiStories._get_edit_url(id)
+        if edit_url:
+            story["edit_url"] = edit_url
 
         location = db.geopos("z:stories:position", id)[0]
         if location:

@@ -7,6 +7,11 @@
       <div v-if="story" class="tile is-ancestor">
         <div class="tile is-parent">
           <div class="tile is-child box">
+            <router-link v-if="story.edit_url" :to="'/'+$i18n.locale+story.edit_url">
+              <span class="icon">
+                <i class="fa fa-edit"></i>
+              </span>
+            </router-link>
             <p class="title"><MapIcon :type="story.activity"/>{{ story.title}}</p>
             <p>{{ story.description }}</p>
           </div>
@@ -89,5 +94,11 @@ export default {
   display: inline-block;
   margin: 0 0 1em;
   width: 100%;
+}
+
+.box .icon {
+  position: absolute;
+  top: 20px;
+  right: 0;
 }
 </style>
