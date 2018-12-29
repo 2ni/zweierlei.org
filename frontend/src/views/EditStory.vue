@@ -230,6 +230,7 @@ export default {
       // preview medias and ignore invalid ones
       for (let i = 0; i < num; i++) {
         const mime = event.target.files[i].type;
+        // TODO better check for images https://stackoverflow.com/a/42983450/59391
         if (!mime.startsWith('image/')) {
           this.photosToUpload.splice(i, 1);
           continue;
