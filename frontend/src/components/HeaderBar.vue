@@ -93,12 +93,6 @@ export default {
 };
 </script>
 
-<style>
-nav li:after {
-  content: '|';
-}
-
-nav li:last-child:after {
-  content: '';
+<style scoped>
 }
 </style>
