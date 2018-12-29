@@ -11,7 +11,8 @@
         <div class="tile is-parent">
           <div class="tile is-8 is-child notification is-warning is-paddingless card">
             <header class="card-header">
-              <p class="card-header-title">Create a story</p>
+              <p v-if="isNewStory" class="card-header-title">Create a story</p>
+              <p v-else class="card-header-title">Update the story</p>
             </header>
             <div class="card-content">
               <form enctype="multipart/form-data" novalidate @submit.prevent="processSubmit">
@@ -65,7 +66,7 @@
                 </div>
                 <div class="dropField" v-show="isDragging || isUploading">
                   <p v-if="isInitial">Drop Files anywhere</p>
-                  <p v-if="isUploading">Uploading {{ photoCount }} file(s)</p>
+                  <p v-if="isUploading">Uploading {{ photosToUpload.length }} file(s)</p>
                   <input type="file" multiple name="photos" :disabled="isUploading" @change="processFile($event)" accept="image/*">
                 </div>
                 <div class="field">
@@ -134,7 +135,6 @@ import { storyService } from '@/services';
 const STATUS_INITIAL = 0;
 const STATUS_UPLOADING = 1;
 const STATUS_SAVING = 2;
-const STATUS_ERROR = 3;
 
 export default {
   components: {
@@ -165,7 +165,6 @@ export default {
       story: {},
       photos: [],
       photosToUpload: [],
-      photoCount: null,
       currentStatus: STATUS_INITIAL,
       isDragging: null,
       saveText: 'Save',
@@ -202,7 +201,6 @@ export default {
         if (status === 422) {
           // set errors returned from backend
           // https://github.com/baianat/vee-validate/issues/1153
-          console.log(status, msg);
           for (const element in msg) {
             if (msg.hasOwnProperty(element)) {
               const field = this.$validator.fields.find({name: element});
@@ -225,11 +223,18 @@ export default {
       this.isDragging = false;
     },
     processFile(event) {
-      this.photoCount = event.target.files.length;
-      if (!this.photoCount) { return; }
+      const num = event.target.files.length;
+      // this.photosToUpload.push.apply(this.photosToUpload, event.target.files);
+      Array.prototype.push.apply(this.photosToUpload, event.target.files);
 
-      // preview medias
-      for (let i = 0; i < this.photoCount; i++) {
+      // preview medias and ignore invalid ones
+      for (let i = 0; i < num; i++) {
+        const mime = event.target.files[i].type;
+        if (!mime.startsWith('image/')) {
+          this.photosToUpload.splice(i, 1);
+          continue;
+        }
+
         const reader = new FileReader();
         reader.addEventListener('load', function(e) {
           // ensure reactivity
@@ -240,23 +245,27 @@ export default {
         reader.readAsDataURL(event.target.files[i]);
       }
 
-      this.photosToUpload.push.apply(this.photosToUpload, event.target.files);
-
-      if (this.isNewStory) {
-        // upload files after saving data
+      if (!this.photosToUpload.length) {
+        this.currentStatus = STATUS_INITIAL;
         this.deemphasizeDropBox();
+        this.$store.state.alert = { message: 'No file was uploaded', type: 'danger' };
       } else {
-        // upload files instantly
-        const medias = this.createFormData(this.photosToUpload);
-        this.uploading(this.story.content_url, medias);
-        event.target.value = null; // needed to be able to upload same media multiple times
+        if (this.isNewStory) {
+          // upload files after saving data
+          this.deemphasizeDropBox();
+        } else {
+          // upload files instantly
+          const medias = this.createFormData(this.photosToUpload);
+          this.uploading(this.story.content_url, medias);
+          event.target.value = null; // needed to be able to upload same media multiple times
+        }
       }
       if (event) { return event.preventDefault(); }
     },
     createFormData(files) {
       const medias = new FormData();
       Array
-          .from(Array(this.photoCount).keys())
+          .from(Array(files.length).keys())
           .map((x) => {
             medias.append('medias', files[x]);
           });
@@ -276,17 +285,12 @@ export default {
           }
           this.photosToUpload = [];
           this.story = response.data.story;
-
-          // const { data: { responseMedias } } = response;
-          // var args = [this.photos.length, 0].concat(responseMedias);
-          // Array.prototype.splice.apply(this.photos, args);
-          // console.log("photos processed", this.photos);
-          // this.photos = this.photos.concat(responseMedias);
         })
         .catch((error) => {
+          this.currentStatus = STATUS_INITIAL;
           const { response: { status }, response: { data: { msg } } } = error;
-          console.log('upload error', status, msg);
-          this.currentStatus = STATUS_ERROR;
+          this.$store.state.alert = { message: status + ': ' + msg, type: 'danger' };
+          this.photosToUpload = [];
         });
     },
   },
@@ -307,9 +311,6 @@ export default {
     },
     isSaving() {
       return this.currentStatus === STATUS_SAVING;
-    },
-    isError() {
-      return this.currentStatus === STATUS_ERROR;
     },
   },
 };
