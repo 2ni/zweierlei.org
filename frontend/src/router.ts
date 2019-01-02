@@ -10,6 +10,7 @@ import Base from './views/Base.vue';
 import EditStory from './views/EditStory.vue';
 import Story from './views/Story.vue';
 import Profile from './views/Profile.vue';
+import Register from './views/Register.vue';
 
 import NotFound from './components/NotFound.vue';
 
@@ -84,6 +85,12 @@ export default new Router({
           name: 'Profile',
           component: Profile,
         },
+        {
+          path: 'register',
+          name: 'Register',
+          component: Register,
+        },
+
         {
           path: 'form',
           name: 'Form',

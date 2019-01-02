@@ -14,15 +14,16 @@
       "data.error": "An error occured. {msg}",
       "data.saved": "Data successfully saved.",
       "hello": "Hello",
-      "user.firstname": "firstname",
-      "user.lastname": "lastname",
+      "user.create": "Create account",
       "user.email": "e-mail",
-      "user.password": "password",
+      "user.firstname": "firstname",
       "user.help.firstname": "Your firstname",
       "user.help.lastname": "Your lastname",
       "user.help.email": "Your e-mail",
       "user.help.password": "Your password",
-      "save": "Save"
+      "user.lastname": "lastname",
+      "user.password": "password",
+      "user.save": "Save"
     }
   }
 }

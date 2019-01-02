@@ -62,7 +62,7 @@ export default {
     },
     helloUser() {
       if (this.isLoggedIn) {
-        return 'Hello ' + this.$user.firstname;
+        return 'Hello' + (this.$user.firstname ? ' ' + this.$user.firstname : '');
       }
     },
   },

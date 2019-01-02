@@ -13,6 +13,7 @@ export const userService = {
   logout,
   get,
   save,
+  register,
 };
 
 // TODO use http for login instead of axios directly
@@ -53,6 +54,9 @@ function get() {
     return p;
 }
 
+/*
+ * Save data from an existing user
+ */
 function save(data) {
   const p = new Promise((resolve, reject) => {
     http.post('users', data)
@@ -61,6 +65,21 @@ function save(data) {
       const currentUser = JSON.parse(localStorage.getItem('user'));
       const newUser = { ...currentUser, ...responseUser.data };
       localStorage.setItem('user', JSON.stringify(newUser));
+      resolve(responseUser);
+    })
+    .catch((errorUser) => {
+      reject(errorUser);
+    });
+  });
+
+    return p;
+}
+
+function register(data) {
+  const p = new Promise((resolve, reject) => {
+    http.post('register', data)
+    .then((responseUser) => {
+      localStorage.setItem('user', JSON.stringify(responseUser.data));
       resolve(responseUser);
     })
     .catch((errorUser) => {

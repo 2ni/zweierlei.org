@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <Profile type="profile" />
+    <Profile type="register" />
   </div>
 </template>
 
