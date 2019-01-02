@@ -7,7 +7,7 @@
       <div v-else-if="loading">
         Loading...
       </div>
-      <div v-else class="column is-one-third" v-for="(story, i) in stories">
+      <div v-else class="column is-half" v-for="(story, i) in stories">
 
         <div class="card">
           <router-link :to="'/'+$i18n.locale+story.detail_url">
@@ -99,12 +99,12 @@ export default {
 }
 
 .card {
-  height: 300px;
+  height: 400px;
   overflow: hidden;
 }
 
 .card-image {
-  height: 200px;
+  height: 320px;
   overflow: hidden;
 }
 </style>
