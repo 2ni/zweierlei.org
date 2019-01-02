@@ -20,7 +20,7 @@ import re, uuid
 class ApiLogin(ZweierleiResource):
     """
     submit creds to backend.
-    http -F POST :5000/api/v01/login email=test@test.com password=test
+    http -F POST :5000/api/v01/login email=test@zweierlei.org password=test
 
     @return success/failure, session token, profile info
     """
@@ -71,7 +71,7 @@ class ApiLogin(ZweierleiResource):
                 return self.response(*ret.split(":"))
 
     def login(self, uid, user=None):
-        access_token = create_access_token(identity = uid)
+        access_token = create_access_token(identity = uid, fresh = True)
         refresh_token = create_refresh_token(identity = uid)
         user = db.hgetall("z:users:{uid}".format(uid=uid)) if user == None else user
 

@@ -57,7 +57,7 @@
                     <div class="select" v-bind:class="{ 'is-danger': errors.has('activity') }">
                       <select v-validate="{ is_not: 'undefined' }" name="activity" v-model="story.activity">
                         <option disabled value="undefined">Activity</option>
-                        <option v-for="activity in activities" :value="activity">{{ $t('activity_'+activity) }}</option>
+                        <option v-for="activity in activities" :value="activity">{{ $t('activity.'+activity) }}</option>
                       </select>
                     </div>
                     <div v-for="activity in activities" v-show="story.activity == activity" class="icon is-small is-left"><i class="fas" :class="['fa-'+activity]"></i></div>
@@ -89,7 +89,7 @@
                   <div class="control">
                     <button class="button is-link" :disabled="isSaving">
                       <span v-if="isUploading || isSaving" class="icon is-small"><i class="fas fa-sync-alt fa-spin"></i></span>
-                      <span>{{ saveText }}</span>
+                      <span>{{ $t('save') }}</span>
                     </button>
                   </div>
                 </div>
@@ -167,7 +167,6 @@ export default {
       photosToUpload: [],
       currentStatus: STATUS_INITIAL,
       isDragging: null,
-      saveText: 'Save',
       idNotFound: false,
     };
   },
@@ -189,7 +188,7 @@ export default {
           // new entry -> redirect to detail page
           this.$router.push({name: 'EditStory', params: {id: data.id}});
         } else {
-          this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
+          this.$store.state.alert = { message: $t('data.saved'), type: 'success' };
           this.currentStatus = STATUS_INITIAL;
         }
 

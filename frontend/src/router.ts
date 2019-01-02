@@ -9,6 +9,8 @@ import Bulma from './views/Bulma.vue';
 import Base from './views/Base.vue';
 import EditStory from './views/EditStory.vue';
 import Story from './views/Story.vue';
+import Profile from './views/Profile.vue';
+
 import NotFound from './components/NotFound.vue';
 
 import { defaultLocale } from './locales/lang.json';
@@ -76,6 +78,11 @@ export default new Router({
           name: 'Map',
           component: Map,
           meta: { layout: 'full', showHeader: true },
+        },
+        {
+          path: 'profile',
+          name: 'Profile',
+          component: Profile,
         },
         {
           path: 'form',

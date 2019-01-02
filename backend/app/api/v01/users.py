@@ -11,7 +11,7 @@ from pprint import pprint
 from redis.exceptions import WatchError
 
 from passlib.hash import pbkdf2_sha256 as sha256
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
+from flask_jwt_extended import (jwt_required, jwt_refresh_token_required, get_jwt_identity, fresh_jwt_required)
 
 import re
 
@@ -28,7 +28,7 @@ class ApiUsers(ZweierleiResource):
     exposed_fields = ["email", "firstname", "lastname"]
     # msg, uid are generated
 
-    @jwt_required
+    @fresh_jwt_required
     def get(self, uid=None):
         # method = getattr(self, uid, None)
 
@@ -39,7 +39,7 @@ class ApiUsers(ZweierleiResource):
         filteredData = filter_dict(rawData, self.exposed_fields)
         return jsonify(merge_dict(filteredData, {"uid": rawData["uid"], "msg": "ok"}))
 
-    @jwt_required
+    @fresh_jwt_required
     def post(self, uid=None):
         """
         update user data in backend

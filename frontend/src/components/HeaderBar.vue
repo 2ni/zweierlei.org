@@ -22,9 +22,9 @@
       </div>
 
       <div class="navbar-end">
+        <router-link class="navbar-item" :to="$localize('profile')">{{ helloUser() }}</router-link>
         <div class="navbar-item">
-          <span>{{ helloUser() }}</span><span v-if="user">&nbsp;|&nbsp;</span>
-          <router-link :to="$localize('login?f='+$route.fullPath)">
+          <router-link class="button is-light" :to="$localize('login?f='+$route.fullPath)">
             {{ isLoggedIn ? 'Logout' : 'Login'}}
           </router-link>
         </div>
@@ -61,8 +61,8 @@ export default {
       }
     },
     helloUser() {
-      if (this.user) {
-        return 'Hello ' + this.user.firstname;
+      if (this.isLoggedIn) {
+        return 'Hello ' + this.$user.firstname;
       }
     },
   },
@@ -70,12 +70,10 @@ export default {
     return {
       navItems: [],
       showNav: false,
-      user: false,
     };
   },
   computed: {
     isLoggedIn() {
-      this.user = JSON.parse(localStorage.getItem('user'));
       return this.$store.state.authentication.status === 'loggedIn';
     },
   },

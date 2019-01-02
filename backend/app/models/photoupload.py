@@ -28,7 +28,6 @@ class Photoupload:
         except :
             pass
 
-
         try:
             self.tags = ({TAGS[k]: v for k, v in self._img._getexif().items() if k in PIL.ExifTags.TAGS})
         except AttributeError:

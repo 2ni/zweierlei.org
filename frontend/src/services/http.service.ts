@@ -22,6 +22,14 @@ function addSubscriber(callback) {
   (subscribers as any).push(callback);
 }
 
+function redirToLogin() {
+  localStorage.removeItem('user');
+  // use route to load login form to not reload page completely
+  // location.reload();
+  const lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
+  router.push('/' + lang + '/login?f=' + window.location.pathname);
+}
+
 http.interceptors.response.use((response) => {
   return response;
 }, (error) => {
@@ -29,13 +37,17 @@ http.interceptors.response.use((response) => {
   const { config, response: { status } } = error;
   const originalRequest = config;
   const userString = localStorage.getItem('user');
-  const user = userString ? JSON.parse(userString) : null;
+  const user = userString ? JSON.parse(userString) : [];
 
   if (status === 401) {
     if (!isRefreshing && !originalRequest.__retried) {
       originalRequest.__retried = true;
       isRefreshing = true;
-      console.log('refreshing token');
+      console.log('refreshing token', user);
+      if (!user.refresh_token) {
+        redirToLogin();
+      }
+
       const c = axios.create({
         baseURL: process.env.VUE_APP_API_URL,
         headers: { Authorization: 'Bearer ' + user.refresh_token },
@@ -53,13 +65,12 @@ http.interceptors.response.use((response) => {
         const { response: { status: errorRefresh }, response: { data: { msg } } } = responseErrorRefresh;
         // console.log("refresh error", errorRefresh, msg);
         if (errorRefresh === 401) {
-          localStorage.removeItem('user');
-          // use route to load login form to not reload page completely
-          // location.reload();
-          const lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
-          router.push('/' + lang + '/login?f=' + window.location.pathname);
+          redirToLogin();
         }
       });
+    } else {
+      // if retry failed -> redir to login page too (eg fresh token required)
+      redirToLogin();
     }
 
     const retryOriginalRequest = new Promise((resolve) => {

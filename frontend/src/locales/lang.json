@@ -3,15 +3,26 @@
   "messages": {
     "de": {
       "hello": "Hallo",
-      "activity_utensils": "Gastronomie",
-      "activity_camera": "Besichtigung",
-      "activity_running": "Natur"
+      "activity.utensils": "Gastronomie",
+      "activity.camera": "Besichtigung",
+      "activity.running": "Natur"
     },
     "en": {
+      "activity.utensils": "Gastronomy",
+      "activity.camera": "Sightseeing",
+      "activity.running": "Outdooring",
+      "data.error": "An error occured. {msg}",
+      "data.saved": "Data successfully saved.",
       "hello": "Hello",
-      "activity_utensils": "Gastronomy",
-      "activity_camera": "Sightseeing",
-      "activity_running": "Outdooring"
+      "user.firstname": "firstname",
+      "user.lastname": "lastname",
+      "user.email": "e-mail",
+      "user.password": "password",
+      "user.help.firstname": "Your firstname",
+      "user.help.lastname": "Your lastname",
+      "user.help.email": "Your e-mail",
+      "user.help.password": "Your password",
+      "save": "Save"
     }
   }
 }

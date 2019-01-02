@@ -9,9 +9,12 @@ import './registerServiceWorker';
 import { http } from '@/services';
 import './filters';
 import { localize } from '@/mixins';
+import { user } from '@/mixins';
 Vue.mixin(localize);
+Vue.mixin(user);
 
 Vue.prototype.$http = http;
+// TODO cleanup multiple localStorage.getItem('user') in the code
 
 /*
 import { fakeBackend } from './helpers';
