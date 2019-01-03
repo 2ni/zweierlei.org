@@ -175,7 +175,7 @@ class Test(unittest.TestCase):
 
         # overwrite user data w/o mandatory email
         resp, data = self.callWithToken("post", self.api("users"), current["access_token"], {"firstname": "John"})
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 422)
         self.assertEqual(data["msg"]["email"], "required element")
 
         current = self.login()

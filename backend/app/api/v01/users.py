@@ -51,10 +51,10 @@ class ApiUsers(ZweierleiResource):
         dataToSave = filter_dict(rawNewData, self.exposed_fields)
 
         # mandatory fields
-        # TODO check if email not empty and is a potential email
+        # TODO check if email is a potential email
         err = check_mandatory_fields(dataToSave, "email")
         if err:
-            return make_response(jsonify(err), 400)
+            return make_response(jsonify(err), 422)
 
         if uid and not self.is_allowed(uid):
             return self.response("not allowed")
