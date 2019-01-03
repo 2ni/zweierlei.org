@@ -33,7 +33,7 @@ def check_mandatory_fields(data, mandatory):
 
         err = {}
         for elm in mandatory:
-            if (elm not in data):
+            if (elm not in data or data[elm] == ""):
                 err[elm] = "required element"
 
         if err:
