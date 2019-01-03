@@ -99,7 +99,7 @@ export default {
 }
 
 .card {
-  height: 400px;
+  height: 420px;
   overflow: hidden;
 }
 

@@ -96,6 +96,12 @@ export default {
     processSubmit(e) {
       this.isSaving = true;
       const cmd = this.isProfile ? 'save' : 'register';
+
+      // keep old pw (do not update) if not given
+      if (this.isProfile && !this.user.password) {
+        delete this.user.password;
+      }
+
       userService[cmd](this.user)
         .then((responseSaving) => {
           this.isSaving = false;
