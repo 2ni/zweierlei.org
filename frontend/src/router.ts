@@ -84,6 +84,7 @@ export default new Router({
           path: 'profile',
           name: 'Profile',
           component: Profile,
+          meta: { auth: true },
         },
         {
           path: 'register',

@@ -9,12 +9,9 @@ import './registerServiceWorker';
 import { http } from '@/services';
 import './filters';
 import { localize } from '@/mixins';
-import { user } from '@/mixins';
 Vue.mixin(localize);
-Vue.mixin(user);
 
 Vue.prototype.$http = http;
-// TODO cleanup multiple localStorage.getItem('user') in the code
 
 /*
 import { fakeBackend } from './helpers';
@@ -94,8 +91,7 @@ export const i18n = new VueI18n({
 router.beforeEach((to: any, from: any, next: any) => {
   i18n.locale = to.params.locale;
 
-  const loggedIn = localStorage.getItem('user');
-  if (to.meta.auth && !loggedIn) {
+  if (to.meta.auth && store.state.authentication.status != 'loggedIn') {
     return next({
       path: '/' + to.params.locale + '/login',
       query: { f: to.path },
@@ -120,6 +116,8 @@ Vue.component('empty-layout', Empty);
 Vue.component('full-layout', Full);
 
 Vue.config.productionTip = false;
+
+import { userService } from '@/services';
 
 new Vue({
   router,

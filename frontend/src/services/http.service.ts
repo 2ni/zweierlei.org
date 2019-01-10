@@ -8,24 +8,31 @@
 import Vue from 'vue';
 import axios from 'axios';
 import router from '@/router';
+import store from '@/store';
 
 const http = axios.create({ baseURL: process.env.VUE_APP_API_URL });
 
-let isRefreshing = false;
+let workingOnRefresh = false;
 let subscribers = [];
 
-function onAccessTokenFetched(accessToken) {
-  subscribers = (subscribers as any).filter((callback) => callback(accessToken));
+// directly redir to login page on certain conditions
+const redirMsgs = [
+  'fresh token required',
+  'missing authorization header',
+];
+
+function onAccessTokenFetched(withoutToken) {
+  subscribers = (subscribers as any).filter((callback) => callback(withoutToken));
 }
 
 function addSubscriber(callback) {
+  workingOnRefresh = false;
   (subscribers as any).push(callback);
 }
 
 function redirToLogin() {
-  localStorage.removeItem('user');
-  // use route to load login form to not reload page completely
-  // location.reload();
+  subscribers = [];
+
   const lang = window.location.pathname.replace(/^\/([^\/]*).*$/, '$1');
   router.push('/' + lang + '/login?f=' + window.location.pathname);
 }
@@ -33,65 +40,83 @@ function redirToLogin() {
 http.interceptors.response.use((response) => {
   return response;
 }, (error) => {
-  // console.log(error.response.status, error.response.data.msg);
-  const { config, response: { status } } = error;
-  const originalRequest = config;
-  const userString = localStorage.getItem('user');
-  const user = userString ? JSON.parse(userString) : [];
+  const { config, response: { status }, response: { data: { msg } } } = error;
+  let origConfig = config;
 
+  console.log('error', status, msg);
+  /*
+  if (origConfig.__retried) {
+    console.log('retried error');
+    return Promise.reject('retried error');
+  }
+  */
+
+  // access token expired
   if (status === 401) {
-    if (!isRefreshing && !originalRequest.__retried) {
-      originalRequest.__retried = true;
-      isRefreshing = true;
-      console.log('refreshing token', user);
-      if (!user.refresh_token) {
-        redirToLogin();
-      }
 
-      const c = axios.create({
-        baseURL: process.env.VUE_APP_API_URL,
-        headers: { Authorization: 'Bearer ' + user.refresh_token },
-      });
-      c.post('refresh').then((r) => {
-        // console.log('got new access_token'/*, r.data.access_token*/);
-        user.access_token = r.data.access_token;
-        localStorage.setItem('user', JSON.stringify(user));
-        isRefreshing = false;
-        onAccessTokenFetched(r.data.access_token);
-      })
-      .catch((responseErrorRefresh) => {
-        // refresh has expired -> redirect to login
-        // console.log(responseErrorRefresh.response.status, responseErrorRefresh.response.data.msg);
-        const { response: { status: errorRefresh }, response: { data: { msg } } } = responseErrorRefresh;
-        // console.log("refresh error", errorRefresh, msg);
-        if (errorRefresh === 401) {
-          redirToLogin();
-        }
-      });
-    } else {
-      // if retry failed -> redir to login page too (eg fresh token required)
-      redirToLogin();
+    for (var i = 0; i < redirMsgs.length; i++) {
+      if (msg.toLowerCase().indexOf(redirMsgs[i]) != -1) {
+        redirToLogin();
+        return Promise.reject(error);
+      }
     }
 
+    console.log('workingOnRefresh', workingOnRefresh);
+    console.log('retried', origConfig.__retried);
+
+    if (!workingOnRefresh && !origConfig.__retried) {
+      console.log('refreshing token');
+      workingOnRefresh = true;
+      origConfig.__retried = true;
+
+      store.dispatch('authentication/refresh')
+      .then(() => {
+        console.log('access token refreshed');
+        onAccessTokenFetched();
+      })
+      // refresh token expired
+      // retry calls w/o token
+      .catch(() => {
+        console.log('refresh token expired');
+        store.dispatch('authentication/logout')
+        .then(() => {
+          console.log('logged out');
+          // remove token and __retried
+          onAccessTokenFetched(true);
+        });
+      });
+    }
+
+    // in case refresh token is expired token will be removed in interceptors.request
     const retryOriginalRequest = new Promise((resolve) => {
-      addSubscriber((accessToken) => {
-        // originalRequest.headers.Authorization = 'Bearer ' + accessToken
-        resolve(http(originalRequest));
+      console.log('added subscriber', origConfig.url);
+      addSubscriber((withoutToken = false) => {
+        if (withoutToken) {
+          console.log('trying w/o token');
+          delete origConfig.__retried;
+          delete config.headers.Authorization;
+        }
+        console.log('consuming subscriber', origConfig.url, origConfig);
+        resolve(http(origConfig));
       });
     });
     return retryOriginalRequest;
+
   }
+
   return Promise.reject(error);
 });
 
-
-// always ensure that we take the newest access_token when using axios/$http
 http.interceptors.request.use((config) => {
-  const userString = localStorage.getItem('user');
-  const user = userString ? JSON.parse(userString) : null;
-  if (user && user.access_token) {
-    config.headers.Authorization = 'Bearer ' + user.access_token;
+  console.log('******** http with access_token', config.method.toUpperCase(), config.baseURL+'/'+config.url);
+  console.log('subscribers', subscribers.length);
+  console.log('__retried', config.__retried);
+  if (store.state.authentication.user) {
+    console.log('call with token: ...', store.state.authentication.user.access_token.substr(-5));
+    config.headers.Authorization = 'Bearer ' + store.state.authentication.user.access_token;
   }
+  console.log('********');
+
   return config;
 });
 

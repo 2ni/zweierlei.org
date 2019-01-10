@@ -104,8 +104,8 @@
             <div class="card-content">
               <table class="table">
                 <tbody>
-                  <tr v-for="tag in storyExpose" :key="story[tag]">
-                    <td>{{ tag }}</td><td>{{ story[tag] }}</td>
+                  <tr v-for="(value, key) in storyExposed" :key="key">
+                    <td>{{ key }}</td><td>{{ value }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -128,6 +128,7 @@ import MapIcon from '@/components/MapIcon.vue';
 import Masonry from '@/components/Masonry.vue';
 
 import { storyService } from '@/services';
+import { filterObject } from '@/helpers';
 
 // with thanks to https://github.com/chybie/file-upload-vue
 // import { upload } from '@/services/file-upload.service';
@@ -188,7 +189,7 @@ export default {
           // new entry -> redirect to detail page
           this.$router.push({name: 'EditStory', params: {id: data.id}});
         } else {
-          this.$store.state.alert = { message: $t('data.saved'), type: 'success' };
+          this.$store.dispatch('alert/success', $t('data.saved'));
           this.currentStatus = STATUS_INITIAL;
         }
 
@@ -248,7 +249,7 @@ export default {
       if (!this.photosToUpload.length) {
         this.currentStatus = STATUS_INITIAL;
         this.deemphasizeDropBox();
-        this.$store.state.alert = { message: 'No file was uploaded', type: 'danger' };
+        this.$store.dispatch('alert/error', 'No file was uploaded');
       } else {
         if (this.isNewStory) {
           // upload files after saving data
@@ -281,7 +282,7 @@ export default {
           this.currentStatus = STATUS_INITIAL;
           this.deemphasizeDropBox();
           if (newStory) {
-            this.$store.state.alert = { message: 'Data successfully saved.', type: 'success' };
+            this.$store.dispatch('alert/success', 'Data successfully saved');
           }
           this.photosToUpload = [];
           this.story = response.data.story;
@@ -289,16 +290,14 @@ export default {
         .catch((error) => {
           this.currentStatus = STATUS_INITIAL;
           const { response: { status }, response: { data: { msg } } } = error;
-          this.$store.state.alert = { message: status + ': ' + msg, type: 'danger' };
+          this.$store.dispatch('alert/error', status + ': ' + msg);
           this.photosToUpload = [];
         });
     },
   },
   computed: {
-    storyExpose() {
-      return Object.keys(this.story).filter((key) => {
-        return ['created_human', 'lat', 'lon'].includes(key);
-      });
+    storyExposed() {
+      return filterObject(this.story, ['created_human', 'lat', 'lon']);
     },
     isNewStory() {
       return this.$route.params.id === undefined;

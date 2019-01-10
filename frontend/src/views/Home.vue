@@ -53,6 +53,7 @@ export default {
   mounted() {
     (this as any).$http.get('stories')
       .then((responseStories) => {
+        console.log('responseStories', responseStories);
         (this as any).stories = responseStories.data;
         for (let i = 0; i < (this as any).stories.length; i++) {
           (this as any).$http.get((this as any).stories[i].content_url)
@@ -64,8 +65,8 @@ export default {
         }
       })
       .catch((error) => {
+        console.log('errorHome', error);
         (this as any).errored = true;
-        console.log(error);
       })
       .finally(() => (this as any).loading = false);
   },

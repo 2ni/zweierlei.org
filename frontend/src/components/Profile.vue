@@ -5,7 +5,7 @@
     <NotFound v-else-if="notFound" />
 
     <template v-else>
-    
+
       <div class="tile is-ancestor">
         <div class="tile is-parent">
           <div class="tile is-child notification is-warning is-paddingless card">
@@ -35,13 +35,16 @@
                        <i class="fas fa-times has-text-danger"></i>
                      </span>
                     </p>
-                    <p v-show="errors.has(element)" class="help is-danger">{{ errors.first(element) }}</p>
+                    <!-- <p v-show="errors.has(element)" class="help is-danger">{{ errors.first(element) }}</p> -->
+                    <div v-show="errors.has(element)" class="is-small">
+                      <p class="help is-danger" v-for="error in errors.collect(element)">{{ error }}</p>
+                    </div>
                   </div>
                 </template>
 
                 <div class="field">
                   <div class="control">
-                    <button class="button is-link" :disabled="isSaving">
+                    <button class="button is-link" :disabled="isSaving||errors.all().length > 0">
                       <span v-if="isSaving" class="icon is-small"><i class="fas fa-sync-alt fa-spin"></i></span>
                       <span>{{ $t(isProfile ? 'user.save' : 'user.create') }}</span>
                     </button>
@@ -67,11 +70,11 @@ import NotFound from '@/components/NotFound.vue';
 
 export default {
   props: [ 'type' ],
-  mounted() {
+  beforeMount() {
     if (this.isProfile) {
       userService.get()
         .then((responseUser) => {
-          this.user = responseUser.data;
+          this.user = responseUser;
           this.isLoading = false;
         })
         .catch((errorUser) => {
@@ -95,25 +98,24 @@ export default {
     },
     processSubmit(e) {
       this.isSaving = true;
-      const cmd = this.isProfile ? 'save' : 'register';
+      const entrypoint = this.isProfile ? 'users' : 'register';
 
       // keep old pw (do not update) if not given
       if (this.isProfile && !this.user.password) {
         delete this.user.password;
       }
 
-      userService[cmd](this.user)
+      this.$store.dispatch('authentication/save', { entrypoint, user: this.user })
         .then((responseSaving) => {
           this.isSaving = false;
-          this.$store.state.alert = { message: this.$t('data.saved'), type: 'success' };
-          if (this.isRegister) {
+          this.$store.dispatch('alert/success', this.$t('data.saved'));
+          if (!this.isProfile) {
             this.$router.push({name: 'Profile'});
           }
         })
         .catch((errorSaving) => {
           this.isSaving = false;
           const { response: { status }, response: { data: { msg } } } = errorSaving;
-          console.log('error', status, msg);
           if ([422, 409].includes(status)) {
 	    // set errors returned from backend
 	    // https://github.com/baianat/vee-validate/issues/1153
@@ -130,7 +132,7 @@ export default {
 	      }
 	    }
           } else {
-            this.$store.state.alert = { message: this.$t('data.error', { msg: JSON.stringify(msg) }), type: 'danger' };
+            this.$store.dispatch('alert/error', JSON.stringify(msg));
           }
         });
     },
@@ -138,9 +140,6 @@ export default {
   computed: {
     isProfile() {
       return this.type === 'profile';
-    },
-    isRegister() {
-      return this.type === 'register';
     },
   },
   components: {

@@ -10,18 +10,17 @@ import { http } from '@/services';
 
 export const userService = {
   login,
+  refresh,
   logout,
   get,
   save,
-  register,
 };
 
-// TODO use http for login instead of axios directly
 function login(user: any) {
   return axios({url: 'login', baseURL: process.env.VUE_APP_API_URL, method: 'POST', data: user})
     .then((responseUser) => {
       if (responseUser.data.msg === 'ok') {
-        localStorage.setItem('user', JSON.stringify(responseUser.data));
+        return Promise.resolve(responseUser.data);
       }
     })
     .catch((error) => {
@@ -32,19 +31,37 @@ function login(user: any) {
     });
 }
 
+function refresh(user: any) {
+  return axios({
+      url: 'refresh',
+      baseURL: process.env.VUE_APP_API_URL,
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + user.refresh_token },
+      })
+    .then((responseUser) => {
+      if (responseUser.data.msg === 'ok') {
+        return Promise.resolve(responseUser.data);
+      }
+    })
+    .catch((error) => {
+      logout();
+      return Promise.reject(error.response.data.msg);
+    });
+}
+
 function logout() {
   // TODO call backend logout API
-  localStorage.removeItem('user');
 }
 
 /*
  * Get user data from backend
+ * noLogin in config does not redirect to login page
  */
 function get() {
   const p = new Promise((resolve, reject) => {
     http.get('users')
     .then((responseUser) => {
-      resolve(responseUser);
+      resolve(responseUser.data);
     })
     .catch((errorUser) => {
       reject(errorUser);
@@ -56,31 +73,13 @@ function get() {
 
 /*
  * Save data from an existing user
+ * entrypoint = 'users|register'
  */
-function save(data) {
+function save(entrypoint, data) {
   const p = new Promise((resolve, reject) => {
-    http.post('users', data)
+    http.post(entrypoint, data)
     .then((responseUser) => {
-      // merge current data with new data (keeping tokens)
-      const currentUser = JSON.parse(localStorage.getItem('user'));
-      const newUser = { ...currentUser, ...responseUser.data };
-      localStorage.setItem('user', JSON.stringify(newUser));
-      resolve(responseUser);
-    })
-    .catch((errorUser) => {
-      reject(errorUser);
-    });
-  });
-
-    return p;
-}
-
-function register(data) {
-  const p = new Promise((resolve, reject) => {
-    http.post('register', data)
-    .then((responseUser) => {
-      localStorage.setItem('user', JSON.stringify(responseUser.data));
-      resolve(responseUser);
+      resolve(responseUser.data);
     })
     .catch((errorUser) => {
       reject(errorUser);

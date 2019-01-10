@@ -62,7 +62,8 @@ export default {
     },
     helloUser() {
       if (this.isLoggedIn) {
-        return 'Hello' + (this.$user.firstname ? ' ' + this.$user.firstname : '');
+        const { authentication } = this.$store.state;
+        return 'Hello' + (authentication.user ? ' ' + authentication.user.firstname : '');
       }
     },
   },

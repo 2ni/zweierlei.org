@@ -25,6 +25,7 @@ function delay(ms) {
  * filter_objject({'foo': 'bar', 'mensch': 'meier'}, ['foo']);
  */
 function filterObject(input, filter) {
+  filter = filter ? filter : Object.keys(input);
   const filtered = Object.keys(input)
     .filter(key => filter.includes(key))
     .reduce((obj, key) => {
