@@ -14,20 +14,20 @@ import { delay } from '@/helpers';
 export default {
   computed: {
     layout(): string {
-      return ((this as any).$route.meta.layout || defaultLayout) + '-layout';
+      return (this.$route.meta.layout || defaultLayout) + '-layout';
     },
     alert() {
-      return (this as any).$store.state.alert;
+      return this.$store.state.alert;
     },
   },
   methods: {
     alertClosed(el, done) {
-      (this as any).$store.dispatch('alert/clear');
+      this.$store.dispatch('alert/clear');
     },
     alertOpen(el, done) {
       delay(2000)
         .then(() => {
-          (this as any).$store.state.alert = false;
+          this.$store.dispatch('alert/clear');
         });
     },
   },
@@ -35,11 +35,11 @@ export default {
   watch: {
     $route(to: any, from: any) {
       // clear alert on location change
-      (this as any).$store.dispatch('alert/clear');
+      this.$store.dispatch('alert/clear');
     },
   },
   mounted() {
-    // (this as any).$store.state.alert = { message: 'Foo', type: 'danger' };
+    // this.$store.dispatch('alert/error', 'Foo');
   },
   */
 };
