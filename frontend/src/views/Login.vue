@@ -73,6 +73,7 @@ export default {
             this.$router.push(f ? f : '/' + this.$route.params.locale);
           },
           (error) => {
+            this.$store.dispatch('alert/error', error);
             this.loginFailMessage = error;
           },
         );
